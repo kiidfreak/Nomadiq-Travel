@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\DestinationController;
 use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\InquiryController;
 use App\Http\Controllers\Api\FloatingMemoryController;
+use App\Http\Controllers\Api\BlogPostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,4 +50,12 @@ Route::prefix('memories')->group(function () {
 
 Route::prefix('inquiries')->group(function () {
     Route::post('/', [InquiryController::class, 'store']);
+});
+
+Route::prefix('blog-posts')->group(function () {
+    Route::post('/', [BlogPostController::class, 'store']);
+    // Route::put('/{id}', [BlogPostController::class, 'update']);
+    // Route::delete('/{id}', [BlogPostController::class, 'destroy']);
+    Route::get('/', [BlogPostController::class, 'index']);
+    Route::get('/{id}', [BlogPostController::class, 'show']);
 });
