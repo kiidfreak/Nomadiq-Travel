@@ -16,10 +16,12 @@ class FloatingMemory extends Model
         'image_url',
         'caption',
         'safari_date',
+        'is_published',
     ];
 
     protected $casts = [
         'safari_date' => 'date',
+        'is_published' => 'boolean',
     ];
 
     public function destination(): BelongsTo

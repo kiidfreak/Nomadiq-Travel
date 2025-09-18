@@ -15,12 +15,11 @@ class FloatingMemoryController extends Controller
      */
     public function index()
     {
-        // Get only published memories
+        // Get only published memories, just memory fields
         $memories = FloatingMemory::where('is_published', true)
-            ->with('destination')
             ->latest()
-            ->paginate(12);
-        
+            ->get();
+
         return response()->json([
             'success' => true,
             'data' => $memories,
@@ -28,15 +27,15 @@ class FloatingMemoryController extends Controller
     }
 
     /**
-     * Display the latest memories.
+     * Display the latest published memories.
      * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function latest()
     {
-        // Get only published memories
+        // Get latest published memories with their destinations and packages
         $latestMemories = FloatingMemory::where('is_published', true)
-            ->with('destination')
+            ->with(['destination', 'package'])
             ->latest()
             ->take(8)
             ->get();

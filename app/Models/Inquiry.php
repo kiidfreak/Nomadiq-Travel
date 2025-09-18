@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
 class Inquiry extends Model
+   
 {
     use HasFactory;
 
@@ -17,6 +18,7 @@ class Inquiry extends Model
         'subject',
         'message',
         'status',
+        'package_id',
     ];
 
     protected $casts = [
@@ -142,5 +144,12 @@ class Inquiry extends Model
     public function markAsNew(): void
     {
         $this->update(['status' => 'new']);
+    }
+    /**
+     * Get the related package for the inquiry.
+     */
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
     }
 }

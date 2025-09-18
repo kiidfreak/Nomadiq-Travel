@@ -23,9 +23,8 @@ class InquiryController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
             'package_id' => 'nullable|exists:packages,id',
+            'subject' => 'nullable|string|max:200',
             'message' => 'required|string',
-            'preferred_date' => 'nullable|date|after:today',
-            'number_of_people' => 'nullable|integer|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -41,9 +40,8 @@ class InquiryController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'package_id' => $request->package_id,
+            'subject' => $request->subject,
             'message' => $request->message,
-            'preferred_date' => $request->preferred_date,
-            'number_of_people' => $request->number_of_people,
             'status' => 'new',
         ]);
 

@@ -40,6 +40,12 @@ class InquiryResource extends Resource
                         Forms\Components\TextInput::make('subject')
                             ->maxLength(200)
                             ->placeholder('Inquiry subject'),
+                        Forms\Components\Select::make('package_id')
+                            ->label('Related Package')
+                            ->relationship('package', 'title')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Inquiry Details')
@@ -88,6 +94,11 @@ class InquiryResource extends Resource
                     ->searchable()
                     ->limit(30)
                     ->placeholder('General Inquiry'),
+                Tables\Columns\TextColumn::make('package.title')
+                    ->label('Package')
+                    ->limit(30)
+                    ->placeholder('No package')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('message_excerpt')
                     ->label('Message')
                     ->getStateUsing(fn (Inquiry $record) => $record->message_excerpt)

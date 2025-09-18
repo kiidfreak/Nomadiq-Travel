@@ -62,6 +62,11 @@ class FloatingMemoryResource extends Resource
                             ->placeholder('When was this photo taken?')
                             ->maxDate(now())
                             ->displayFormat('F j, Y'),
+                            Forms\Components\Toggle::make('is_published')
+                                ->label('Published')
+                                ->default(true)
+                                ->inline(false)
+                                ->columnSpanFull(),
                     ])->columns(2),
             ]);
     }
@@ -116,6 +121,9 @@ class FloatingMemoryResource extends Resource
                     ->dateTime('M j, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\ToggleColumn::make('is_published')
+                        ->label('Published')
+                        ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('destination_id')
