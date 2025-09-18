@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->registration()
             ->brandLogo(fn () => view('components.kanyanga-safari-logo'))
             ->brandName('Kanyanga Safari')
+            ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Amber,
             ])

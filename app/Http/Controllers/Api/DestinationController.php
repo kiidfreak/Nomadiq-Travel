@@ -53,7 +53,6 @@ class DestinationController extends Controller
     public function featured()
     {
         $featuredDestinations = Destination::where('is_active', true)
-            ->where('is_featured', true)
             ->take(6)
             ->get();
         

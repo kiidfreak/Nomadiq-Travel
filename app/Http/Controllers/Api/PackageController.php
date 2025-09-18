@@ -63,7 +63,6 @@ class PackageController extends Controller
                 $query->where('is_active', true);
             }])
             ->where('is_active', true)
-            ->where('is_featured', true)
             ->take(3)
             ->get();
         
