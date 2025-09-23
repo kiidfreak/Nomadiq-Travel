@@ -16,6 +16,12 @@ class PaymentResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
     protected static ?int $navigationSort = 3;
 
+    public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && $user->role === 'admin';
+    }
+
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form
