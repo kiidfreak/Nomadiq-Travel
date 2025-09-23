@@ -1,3 +1,5 @@
+use App\Http\Controllers\Api\UserController;
+// Admin-only user registration
 <?php
 
 use Illuminate\Http\Request;

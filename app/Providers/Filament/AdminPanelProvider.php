@@ -26,7 +26,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->registration()
+            // ->registration()
             ->brandLogo(fn () => view('components.kanyanga-safari-logo'))
             ->brandName('Kanyanga Safari')
             ->colors([

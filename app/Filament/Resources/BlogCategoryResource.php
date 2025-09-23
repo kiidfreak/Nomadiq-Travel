@@ -24,6 +24,12 @@ class BlogCategoryResource extends Resource
 
     protected static ?int $navigationSort = 10;
 
+    public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && in_array($user->role, ['admin', 'blogger']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form

@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Filament\Resources;
-
 use App\Models\Testimonial;
 use App\Models\Package;
 use Filament\Resources\Resource;
@@ -18,6 +16,12 @@ class TestimonialResource extends Resource
     protected static ?string $navigationLabel = 'Testimonials';
     protected static ?string $modelLabel = 'Testimonial';
     protected static ?string $pluralModelLabel = 'Testimonials';
+
+    public static function canViewAny(): bool
+    {
+        $user = filament()->auth()->user();
+        return $user && $user->role === 'blogger';
+    }
 
     public static function form(Forms\Form $form): Forms\Form
     {
