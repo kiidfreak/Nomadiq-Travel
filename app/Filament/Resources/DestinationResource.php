@@ -23,6 +23,12 @@ class DestinationResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && in_array($user->role, ['admin', 'portal_user']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form

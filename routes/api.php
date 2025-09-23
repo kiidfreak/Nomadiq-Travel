@@ -1,5 +1,3 @@
-use App\Http\Controllers\Api\UserController;
-// Admin-only user registration
 <?php
 
 use Illuminate\Http\Request;
@@ -9,6 +7,7 @@ use App\Http\Controllers\Api\DestinationController;
 use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\InquiryController;
 use App\Http\Controllers\Api\FloatingMemoryController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BlogPostController;
 
 /*

@@ -18,6 +18,12 @@ class InquiryResource extends Resource
     protected static ?string $modelLabel = 'Inquiry';
     protected static ?string $pluralModelLabel = 'Inquiries';
 
+    public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && in_array($user->role, ['admin', 'portal_user']);
+    }
+
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form

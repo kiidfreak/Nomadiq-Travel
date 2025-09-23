@@ -16,6 +16,11 @@ class CustomerResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?int $navigationSort = 1;
 
+    public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && $user->role === 'admin';
+    }
 
     public static function form(Forms\Form $form): Forms\Form
     {

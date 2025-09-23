@@ -20,6 +20,12 @@ class FloatingMemoryResource extends Resource
     protected static ?string $modelLabel = 'Memory';
     protected static ?string $pluralModelLabel = 'Floating Memories';
 
+    public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && in_array($user->role, ['admin', 'portal_user']);
+    }
+
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form

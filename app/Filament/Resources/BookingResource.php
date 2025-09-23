@@ -19,6 +19,12 @@ class BookingResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?int $navigationSort = 2;
 
+     public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && in_array($user->role, ['admin', 'portal_user']);
+    }
+
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form

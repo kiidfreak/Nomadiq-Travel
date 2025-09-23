@@ -15,6 +15,12 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
+    public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && in_array($user->role, ['admin', 'portal_user']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -25,16 +31,15 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->minLength(6)
-                    ->visibleOn('create')
-                    ->dehydrated(false),
+                    ->visibleOn('create'),
                 Forms\Components\TextInput::make('password_confirmation')
                     ->password()
                     ->required()
                     ->minLength(6)
                     ->visibleOn('create')
-                    ->dehydrated(false)
                     ->same('password')
-                    ->label('Confirm Password'),
+                    ->label('Confirm Password')
+                    ->dehydrated(false),
                 Forms\Components\Select::make('role')
                     ->options([
                         'admin' => 'Admin',

@@ -18,6 +18,12 @@ class PackageItineraryResource extends Resource
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationLabel = 'Package Itineraries';
 
+    public static function canViewAny(): bool
+    {
+    $user = filament()->auth()->user();
+    return $user && in_array($user->role, ['admin', 'portal_user']);
+    }
+
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form

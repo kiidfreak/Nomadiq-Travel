@@ -19,9 +19,10 @@ class TestimonialResource extends Resource
 
     public static function canViewAny(): bool
     {
-        $user = filament()->auth()->user();
-        return $user && $user->role === 'blogger';
+    $user = filament()->auth()->user();
+    return $user && in_array($user->role, ['admin', 'portal_user']);
     }
+
 
     public static function form(Forms\Form $form): Forms\Form
     {
