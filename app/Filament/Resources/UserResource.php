@@ -18,9 +18,10 @@ class UserResource extends Resource
     public static function canViewAny(): bool
     {
     $user = filament()->auth()->user();
-    return $user && in_array($user->role, ['admin', 'portal_user']);
+    return $user && $user->role === 'admin';
     }
 
+    
     public static function form(Form $form): Form
     {
         return $form
