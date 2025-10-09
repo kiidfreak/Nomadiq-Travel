@@ -16,6 +16,7 @@ class FloatingMemory extends Model
         'image_url',
         'caption',
         'safari_date',
+        'slot',
         'is_published',
     ];
 

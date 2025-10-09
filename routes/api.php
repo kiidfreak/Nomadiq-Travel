@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\InquiryController;
 use App\Http\Controllers\Api\FloatingMemoryController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BlogPostController;
+use App\Http\Controllers\Api\BookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,7 @@ Route::prefix('testimonials')->group(function () {
 Route::prefix('memories')->group(function () {
     Route::get('/', [FloatingMemoryController::class, 'index']);
     Route::get('/latest', [FloatingMemoryController::class, 'latest']);
+    Route::get('/by-slots', [FloatingMemoryController::class, 'bySlots']);
 });
 
 Route::prefix('inquiries')->group(function () {
@@ -59,4 +61,10 @@ Route::prefix('blog-posts')->group(function () {
     // Route::delete('/{id}', [BlogPostController::class, 'destroy']);
     Route::get('/', [BlogPostController::class, 'index']);
     Route::get('/{id}', [BlogPostController::class, 'show']);
+});
+
+Route::prefix('bookings')->group(function () {
+    Route::post('/', [BookingController::class, 'store']);
+    Route::get('/{id}', [BookingController::class, 'show']);
+    Route::patch('/{id}/confirm', [BookingController::class, 'confirm']);
 });

@@ -89,6 +89,7 @@ class BookingResource extends Resource
     {
         return $table
             ->modifyQueryUsing(fn ($query) => $query->with(['payments']))
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('booking_reference')
                     ->searchable(),

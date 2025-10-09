@@ -68,6 +68,22 @@ class FloatingMemoryResource extends Resource
                             ->placeholder('When was this photo taken?')
                             ->maxDate(now())
                             ->displayFormat('F j, Y'),
+                        Forms\Components\Select::make('slot')
+                            ->label('Website Position Slot')
+                            ->options([
+                                1 => 'Slot 1',
+                                2 => 'Slot 2', 
+                                3 => 'Slot 3',
+                                4 => 'Slot 4',
+                                5 => 'Slot 5',
+                                6 => 'Slot 6',
+                                7 => 'Slot 7',
+                                8 => 'Slot 8',
+                                9 => 'Slot 9',
+                                10 => 'Slot 10',
+                            ])
+                            ->placeholder('Select position slot for website display')
+                            ->helperText('Choose which slot this memory should appear in on the website'),
                             Forms\Components\Toggle::make('is_published')
                                 ->label('Published')
                                 ->default(true)
@@ -116,6 +132,13 @@ class FloatingMemoryResource extends Resource
                     ->date('M j, Y')
                     ->sortable()
                     ->placeholder('Date unknown'),
+                Tables\Columns\TextColumn::make('slot')
+                    ->label('Slot')
+                    ->sortable()
+                    ->badge()
+                    ->color('primary')
+                    ->formatStateUsing(fn (?int $state): string => $state ? "Slot {$state}" : 'No slot')
+                    ->placeholder('No slot'),
                 Tables\Columns\TextColumn::make('memory_age')
                     ->label('Age')
                     ->getStateUsing(fn (FloatingMemory $record) => $record->memory_age)
@@ -142,6 +165,20 @@ class FloatingMemoryResource extends Resource
                     ->relationship('package', 'title')
                     ->searchable()
                     ->preload(),
+                Tables\Filters\SelectFilter::make('slot')
+                    ->label('Position Slot')
+                    ->options([
+                        1 => 'Slot 1',
+                        2 => 'Slot 2',
+                        3 => 'Slot 3',
+                        4 => 'Slot 4',
+                        5 => 'Slot 5',
+                        6 => 'Slot 6',
+                        7 => 'Slot 7',
+                        8 => 'Slot 8',
+                        9 => 'Slot 9',
+                        10 => 'Slot 10',
+                    ]),
                 Tables\Filters\Filter::make('safari_date')
                     ->form([
                         Forms\Components\DatePicker::make('safari_from')
