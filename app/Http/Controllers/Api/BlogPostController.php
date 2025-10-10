@@ -8,15 +8,13 @@ use App\Models\BlogPost;
 
 class BlogPostController extends Controller
 {
-
     /**
      * Display a listing of blog posts.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-    $posts = BlogPost::published()->get();
+        $posts = BlogPost::published()->get();
+
         return response()->json([
             'success' => true,
             'data' => $posts,
@@ -24,28 +22,19 @@ class BlogPostController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified blog post.
-     *
-     * @param string $id
-     * @return \Illuminate\Http\JsonResponse
+     * Display the specified blog post by ID.
      */
     public function show(string $id)
     {
         $post = BlogPost::find($id);
+
         if (!$post) {
             return response()->json([
                 'success' => false,
                 'message' => 'Blog post not found.'
             ], 404);
         }
+
         return response()->json([
             'success' => true,
             'data' => $post,
@@ -53,19 +42,28 @@ class BlogPostController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Display a blog post by its slug (published posts only).
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, string $id)
+    public function showBySlug(string $slug)
     {
-        //
-    }
+        $post = BlogPost::with(['category', 'package', 'destination', 'author'])
+            ->where('slug', $slug)
+            ->where('is_published', true)
+            ->first();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Blog post not found.',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $post,
+        ]);
     }
-    
 }

@@ -61,6 +61,7 @@ Route::prefix('blog-posts')->group(function () {
     // Route::delete('/{id}', [BlogPostController::class, 'destroy']);
     Route::get('/', [BlogPostController::class, 'index']);
     Route::get('/{id}', [BlogPostController::class, 'show']);
+    Route::get('/slug/{slug}', [BlogPostController::class, 'showBySlug']);
 });
 
 Route::prefix('bookings')->group(function () {
