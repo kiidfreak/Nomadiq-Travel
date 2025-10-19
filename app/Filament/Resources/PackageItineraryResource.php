@@ -15,7 +15,7 @@ class PackageItineraryResource extends Resource
     protected static ?string $model = PackageItinerary::class;
     protected static ?string $navigationGroup = 'Package Management';
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 3;
     protected static ?string $navigationLabel = 'Package Itineraries';
 
     public static function canViewAny(): bool

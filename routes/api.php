@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\FloatingMemoryController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BlogPostController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\PackageItineraryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,3 +70,6 @@ Route::prefix('bookings')->group(function () {
     Route::get('/{id}', [BookingController::class, 'show']);
     Route::patch('/{id}/confirm', [BookingController::class, 'confirm']);
 });
+
+// Custom Itinerary submission for customers
+Route::post('/custom-itinerary/submit', [PackageItineraryController::class, 'submitCustomItinerary']);
