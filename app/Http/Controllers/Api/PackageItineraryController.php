@@ -19,6 +19,12 @@ class PackageItineraryController extends Controller
     public function submitCustomItinerary(Request $request): JsonResponse
     {
         try {
+            // Log the incoming request for debugging
+            \Log::info('Custom itinerary request received', [
+                'package_id' => $request->input('package_id'),
+                'customer_email' => $request->input('customer_email')
+            ]);
+
             $validatedData = $request->validate([
                 'package_id' => 'required|exists:packages,id',
                 'customer_name' => 'required|string|max:255',
@@ -36,6 +42,13 @@ class PackageItineraryController extends Controller
             ]);
 
             $package = Package::find($validatedData['package_id']);
+            
+            if (!$package) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Package not found'
+                ], 404);
+            }
 
             // Check for duplicate day numbers in the request
             $dayNumbers = array_column($validatedData['itinerary'], 'day_number');
@@ -110,12 +123,20 @@ class PackageItineraryController extends Controller
                 \Log::error('Failed to send custom itinerary emails: ' . $emailError->getMessage());
             }
 
+            // Log for debugging
+            \Log::info('Custom itinerary submitted', [
+                'reference_id' => $referenceId,
+                'package_id' => $validatedData['package_id'],
+                'package_title' => $package ? $package->title : 'Package not found',
+                'customer_email' => $validatedData['customer_email']
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Custom itinerary submitted successfully! You will receive a confirmation email shortly. Our team will review and contact you within 24 hours.',
                 'data' => [
                     'reference_id' => $referenceId,
-                    'package_name' => $package->title,
+                    'package_name' => $package ? $package->title : null,
                     'customer_name' => $validatedData['customer_name'],
                     'days_count' => count($customItinerary),
                     'status' => 'pending_approval',
