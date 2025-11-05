@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BlogPostController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\PackageItineraryController;
+use App\Http\Controllers\Api\ProposalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,3 +74,5 @@ Route::prefix('bookings')->group(function () {
 
 // Custom Itinerary submission for customers
 Route::post('/custom-itinerary/submit', [PackageItineraryController::class, 'submitCustomItinerary']);
+
+Route::post('/proposals', [ProposalController::class, 'store']);
