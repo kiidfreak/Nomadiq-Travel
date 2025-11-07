@@ -14,6 +14,12 @@ class ListPayments extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\Action::make('refresh')
+                ->label('Refresh')
+                ->icon('heroicon-o-arrow-path')
+                ->color('gray')
+                ->action(fn () => $this->refreshTable())
+                ->tooltip('Refresh the payments list'),
         ];
     }
 }

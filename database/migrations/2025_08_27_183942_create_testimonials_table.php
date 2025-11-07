@@ -26,8 +26,11 @@ return new class extends Migration
             $table->index('created_at');
         });
 
-        // Add check constraint for rating using raw SQL
-        DB::statement('ALTER TABLE testimonials ADD CONSTRAINT chk_rating CHECK (rating >= 1 AND rating <= 5)');
+        // Add check constraint for rating using raw SQL (MySQL/PostgreSQL only)
+        // SQLite doesn't support CHECK constraints in the same way
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('ALTER TABLE testimonials ADD CONSTRAINT chk_rating CHECK (rating >= 1 AND rating <= 5)');
+        }
     }
 
     /**

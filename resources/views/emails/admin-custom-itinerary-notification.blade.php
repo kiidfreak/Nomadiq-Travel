@@ -23,7 +23,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🔔 Kanyanga Safari Admin</div>
+            <div class="logo">🔔 Nomadiq Admin</div>
             <h2>New Custom Itinerary Submission</h2>
         </div>
 
@@ -78,7 +78,7 @@
                     @if($customer_phone)
                     <li><strong>Call:</strong> <a href="tel:{{ $customer_phone }}">{{ $customer_phone }}</a></li>
                     @endif
-                    <li><strong>Admin Panel:</strong> <a href="https://admin.kanyangasafari.com">Review in Dashboard</a></li>
+                    <li><strong>Admin Panel:</strong> <a href="https://admin.nomadiq.com">Review in Dashboard</a></li>
                 </ul>
             </div>
 
@@ -86,7 +86,7 @@
         </div>
 
         <div class="footer">
-            <p><strong>Kanyanga Safari Admin System</strong><br>
+            <p><strong>Nomadiq Admin System</strong><br>
             This email was automatically generated for reference ID: {{ $reference_id }}</p>
         </div>
     </div>

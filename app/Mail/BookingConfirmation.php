@@ -29,9 +29,9 @@ class BookingConfirmation extends Mailable
     {
         $subject = match($this->type) {
             'created' => 'Booking Received - ' . $this->booking->booking_reference,
-            'confirmed' => 'Safari Booking Confirmed - ' . $this->booking->booking_reference,
+            'confirmed' => 'Booking Confirmed - ' . $this->booking->booking_reference,
             'cancelled' => 'Booking Cancelled - ' . $this->booking->booking_reference,
-            default => 'Safari Booking Update - ' . $this->booking->booking_reference,
+            default => 'Booking Update - ' . $this->booking->booking_reference,
         };
 
         return new Envelope(

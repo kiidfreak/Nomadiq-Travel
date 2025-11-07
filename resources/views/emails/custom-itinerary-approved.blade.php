@@ -22,7 +22,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🎉 Kanyanga Safari</div>
+            <div class="logo">🎉 Nomadiq</div>
             <h2>Your Custom Itinerary is Approved!</h2>
         </div>
 
@@ -31,7 +31,7 @@
             
             <div class="success-box">
                 <h3>✅ Great News!</h3>
-                <p>We're excited to inform you that your custom itinerary request for <strong>{{ $package_name }}</strong> has been <strong>APPROVED</strong> by our safari planning team!</p>
+                <p>We're excited to inform you that your custom itinerary request for <strong>{{ $package_name }}</strong> has been <strong>APPROVED</strong> by our coastal adventure planning team!</p>
             </div>
 
             <div class="highlight-box">
@@ -48,30 +48,30 @@
                 <li><strong>Booking Process:</strong> We'll contact you within 24 hours to initiate the booking process</li>
                 <li><strong>Payment Details:</strong> You'll receive detailed payment information and booking terms</li>
                 <li><strong>Final Itinerary:</strong> We'll provide you with a detailed day-by-day itinerary document</li>
-                <li><strong>Pre-Safari Briefing:</strong> Our team will schedule a pre-safari consultation call</li>
+                <li><strong>Pre-coastal adventure Briefing:</strong> Our team will schedule a pre-coastal adventure consultation call</li>
             </ul>
 
             <div class="success-box">
-                <h3>🦁 Your Safari Adventure Awaits!</h3>
-                <p>Our expert guides and local partners are already preparing to make your customized safari experience truly unforgettable. Kenya's incredible wildlife and breathtaking landscapes are waiting for you!</p>
+                <h3>🦁 Your coastal adventure Adventure Awaits!</h3>
+                <p>Our expert guides and local partners are already preparing to make your customized coastal adventure experience truly unforgettable. Kenya's incredible wildlife and breathtaking landscapes are waiting for you!</p>
             </div>
 
             <div class="highlight-box">
-                <p><strong>📞 Next Steps:</strong> Keep an eye on your phone and email - one of our safari specialists will be in touch very soon to move forward with your booking.</p>
+                <p><strong>📞 Next Steps:</strong> Keep an eye on your phone and email - one of our coastal adventure specialists will be in touch very soon to move forward with your booking.</p>
             </div>
 
-            <p>Thank you for choosing Kanyanga Safari for your African adventure. We can't wait to welcome you to Kenya!</p>
+            <p>Thank you for choosing Nomadiq for your African adventure. We can't wait to welcome you to Kenya!</p>
 
             <p>Best regards,<br>
-            <strong>The Kanyanga Safari Team</strong><br>
-            Safari Planning Specialists</p>
+            <strong>The Nomadiq Team</strong><br>
+            coastal adventure Planning Specialists</p>
         </div>
 
         <div class="footer">
-            <p><strong>Kanyanga Safari</strong><br>
-            Email: info@kanyangasafari.com | Phone: +254 700 000 000<br>
-            Website: www.kanyangasafari.com</p>
-            <p><em>Your custom safari adventure begins here!</em></p>
+            <p><strong>Nomadiq</strong><br>
+            Email: info@nomadiq.com | Phone: +254 700 000 000<br>
+            Website: www.nomadiq.com</p>
+            <p><em>Your custom coastal adventure adventure begins here!</em></p>
         </div>
     </div>
 </body>

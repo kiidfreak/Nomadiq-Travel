@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank You for Your Inquiry - Kanyanga Safari</title>
+    <title>Thank You for Your Inquiry - Nomadiq</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
             padding: 20px;
         }
         .header {
-            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            background: linear-gradient(135deg, #C67B52, #C67B52);
             color: white;
             padding: 30px;
             text-align: center;
@@ -31,7 +31,7 @@
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
-            border-left: 4px solid #4caf50;
+            border-left: 4px solid #C67B52;
         }
         .detail-row {
             margin: 10px 0;
@@ -40,7 +40,7 @@
         }
         .detail-label {
             font-weight: bold;
-            color: #2e7d32;
+            color: #C67B52;
             display: block;
             margin-bottom: 5px;
         }
@@ -71,14 +71,14 @@
 </head>
 <body>
     <div class="header">
-        <h1>🦁 Kanyanga Safari</h1>
+        <h1>🌊 Nomadiq</h1>
         <h2>Thank You for Your Inquiry!</h2>
     </div>
 
     <div class="content">
         <p>Dear {{ $inquiry->name }},</p>
         
-        <p>Thank you for your interest in Kanyanga Safari! We're thrilled that you're considering us for your African adventure.</p>
+        <p>Thank you for your interest in Nomadiq! We're thrilled that you're considering us for your coastal adventure.</p>
 
         <div class="highlight">
             <h3>✅ Your Inquiry Has Been Received</h3>
@@ -134,7 +134,7 @@
         </div>
 
         <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3>🌟 Why Choose Kanyanga Safari?</h3>
+            <h3>🌟 Why Choose Nomadiq?</h3>
             <ul style="margin: 10px 0; padding-left: 20px;">
                 <li>Expert local guides with extensive wildlife knowledge</li>
                 <li>Small group sizes for personalized experiences</li>
@@ -146,9 +146,9 @@
 
         <div class="footer">
             <h3>📞 Contact Information</h3>
-            <p><strong>Email:</strong> info@kanyangasafari.com</p>
-            <p><strong>Phone:</strong> +254 700 757 129</p>
-            <p><strong>Website:</strong> www.kanyangasafari.com</p>
+            <p><strong>Email:</strong> info@nomadiq.com</p>
+            <p><strong>Phone:</strong> +254 700 000 000</p>
+            <p><strong>Website:</strong> www.nomadiq.com</p>
             
             <p style="margin-top: 20px;">
                 <em>Follow us on social media for daily safari moments and travel inspiration!</em>

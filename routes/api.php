@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\FloatingMemoryController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BlogPostController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PackageItineraryController;
 use App\Http\Controllers\Api\ProposalController;
 
@@ -70,6 +71,17 @@ Route::prefix('bookings')->group(function () {
     Route::post('/', [BookingController::class, 'store']);
     Route::get('/{id}', [BookingController::class, 'show']);
     Route::patch('/{id}/confirm', [BookingController::class, 'confirm']);
+    Route::get('/{id}/payments', [PaymentController::class, 'getByBooking']);
+});
+
+Route::prefix('payments')->group(function () {
+    Route::post('/', [PaymentController::class, 'store']);
+    Route::get('/{id}', [PaymentController::class, 'show']);
+    Route::patch('/{id}/verify', [PaymentController::class, 'verify']);
+});
+
+Route::prefix('mpesa')->group(function () {
+    Route::post('/callback', [\App\Http\Controllers\Api\MpesaWebhookController::class, 'stkCallback']);
 });
 
 // Custom Itinerary submission for customers

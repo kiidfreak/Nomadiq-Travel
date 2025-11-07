@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
         @if($emailType === 'created')
-            Booking Received - Kanyanga Safari
+            Booking Received - Nomadiq
         @elseif($emailType === 'confirmed')
-            Booking Confirmed - Kanyanga Safari
+            Booking Confirmed - Nomadiq
         @elseif($emailType === 'cancelled')
-            Booking Cancelled - Kanyanga Safari
+            Booking Cancelled - Nomadiq
         @else
-            Booking Update - Kanyanga Safari
+            Booking Update - Nomadiq
         @endif
     </title>
     <style>
@@ -26,7 +26,7 @@
         .header {
             background: linear-gradient(135deg, 
                 @if($emailType === 'cancelled') #d32f2f, #f44336 
-                @else #2e7d32, #4caf50 
+                @else #C67B52, #C67B52 
                 @endif
             );
             color: white;
@@ -92,7 +92,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>🦁 Kanyanga Safari</h1>
+        <h1>🌊 Nomadiq</h1>
         <h2>
             @if($emailType === 'created')
                 Booking Received
@@ -110,7 +110,7 @@
         <p>Dear {{ $booking->customer->name }},</p>
         
         @if($emailType === 'created')
-            <p>Thank you for choosing Kanyanga Safari! We have received your booking request and our team is reviewing it.</p>
+            <p>Thank you for choosing Nomadiq! We have received your booking request and our team is reviewing it.</p>
         @elseif($emailType === 'confirmed')
             <p>Great news! Your safari booking has been <strong>confirmed</strong>. We're excited to share the magic of African wildlife with you!</p>
         @elseif($emailType === 'cancelled')
@@ -163,7 +163,67 @@
         @if($emailType === 'created')
             <div class="highlight">
                 <h3>⏳ What Happens Next?</h3>
-                <p>Our team will review your booking request and contact you within 24 hours to confirm availability and discuss payment options.</p>
+                <p>Our team will review your booking request and contact you within 24 hours to confirm availability.</p>
+                <p><strong>Payment Instructions:</strong> Please see the payment details below to secure your booking.</p>
+            </div>
+
+            <div class="booking-details">
+                <h3>💳 Payment Instructions</h3>
+                <p style="margin-bottom: 15px;">To secure your booking, please make payment using one of the methods below:</p>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #C67B52; margin-bottom: 10px;">📱 M-Pesa Payment (Recommended for Kenya)</h4>
+                    <div class="detail-row">
+                        <span class="detail-label">Paybill Number:</span>
+                        <span><strong>123456</strong></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account Number:</span>
+                        <span><strong>{{ $booking->booking_reference }}</strong></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Amount:</span>
+                        <span><strong>KES {{ number_format($booking->total_amount * 130, 2) }}</strong> (Approx. ${{ number_format($booking->total_amount, 2) }})</span>
+                    </div>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                        <em>Go to M-Pesa → Pay Bill → Enter Paybill Number → Enter Account Number (your booking reference) → Enter Amount</em>
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <h4 style="color: #C67B52; margin-bottom: 10px;">🏦 Bank Transfer</h4>
+                    <div class="detail-row">
+                        <span class="detail-label">Bank Name:</span>
+                        <span>KCB Bank Kenya</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account Name:</span>
+                        <span>Nomadiq</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account Number:</span>
+                        <span><strong>1234567890</strong></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Swift Code:</span>
+                        <span>KCBLKENX</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Amount:</span>
+                        <span><strong>${{ number_format($booking->total_amount, 2) }}</strong></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Reference:</span>
+                        <span><strong>{{ $booking->booking_reference }}</strong></span>
+                    </div>
+                </div>
+
+                <div style="background: #fff3e0; padding: 15px; border-radius: 5px; margin-top: 15px; border-left: 4px solid #ff9800;">
+                    <h4 style="margin-top: 0; color: #e65100;">⚠️ Important</h4>
+                    <p style="margin-bottom: 5px;"><strong>Always use your booking reference "{{ $booking->booking_reference }}" when making payment.</strong></p>
+                    <p style="margin-bottom: 5px;">After payment, please send proof of payment (receipt/screenshot) to: <strong>payments@nomadiq.com</strong></p>
+                    <p style="margin-bottom: 0;">Your booking will be confirmed once payment is received and verified.</p>
+                </div>
             </div>
         @elseif($emailType === 'confirmed')
             <div class="highlight">
@@ -182,7 +242,7 @@
                 
                 <div class="detail-row">
                     <span class="detail-label">Account Name:</span>
-                    <span>Kanyanga Safari Limited</span>
+                    <span>Nomadiq</span>
                 </div>
                 
                 <div class="detail-row">
@@ -214,7 +274,7 @@
             <div class="highlight" style="background: #fff3e0; border-left: 4px solid #ff9800;">
                 <h3>⚠️ Important Payment Instructions</h3>
                 <p><strong>Please use your booking reference "{{ $booking->booking_reference }}" when making the payment.</strong></p>
-                <p>After payment, please send proof of payment (receipt/screenshot) to: <strong>payments@kanyangasafari.com</strong></p>
+                <p>After payment, please send proof of payment (receipt/screenshot) to: <strong>payments@nomadiq.com</strong></p>
                 <p>Your safari will be finalized once payment is confirmed.</p>
             </div>
         @elseif($emailType === 'cancelled')
@@ -227,17 +287,17 @@
 
         <div class="footer">
             <h3>📞 Contact Information</h3>
-            <p><strong>Email:</strong> info@kanyangasafari.com</p>
-            <p><strong>Phone:</strong> +254 700 757 129</p>
-            <p><strong>Website:</strong> www.kanyangasafari.com</p>
+            <p><strong>Email:</strong> info@nomadiq.com</p>
+            <p><strong>Phone:</strong> +254 700 000 000</p>
+            <p><strong>Website:</strong> www.nomadiq.com</p>
             
             @if($emailType !== 'cancelled')
             <p style="margin-top: 20px;">
-                <em>Thank you for choosing Kanyanga Safari. We can't wait to share the magic of African wildlife with you!</em>
+                <em>Thank you for choosing Nomadiq. Live. Connect. Belong. We can't wait to share unforgettable coastal adventures with you!</em>
             </p>
             @else
             <p style="margin-top: 20px;">
-                <em>We hope to serve you in the future. Thank you for considering Kanyanga Safari.</em>
+                <em>We hope to serve you in the future. Thank you for considering Nomadiq.</em>
             </p>
             @endif
             

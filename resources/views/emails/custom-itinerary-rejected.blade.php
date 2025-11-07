@@ -22,7 +22,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🦁 Kanyanga Safari</div>
+            <div class="logo">🦁 Nomadiq</div>
             <h2>Custom Itinerary Update</h2>
         </div>
 
@@ -40,8 +40,8 @@
                 </ul>
             </div>
 
-            <h3>💬 Let's Discuss Your Safari</h3>
-            <p>While we love your enthusiasm and the thoughtful details in your itinerary, our local expertise suggests some modifications that could enhance your safari experience. We'd like to discuss:</p>
+            <h3>💬 Let's Discuss Your coastal adventure</h3>
+            <p>While we love your enthusiasm and the thoughtful details in your itinerary, our local expertise suggests some modifications that could enhance your coastal adventure experience. We'd like to discuss:</p>
 
             <ul>
                 <li><strong>Seasonal Considerations:</strong> Optimal timing for wildlife viewing and weather</li>
@@ -52,25 +52,25 @@
 
             <div class="highlight-box">
                 <h3>🎯 What's Next?</h3>
-                <p><strong>Personal Consultation:</strong> One of our safari specialists will contact you within 24 hours to discuss modifications and create an even better itinerary together.</p>
+                <p><strong>Personal Consultation:</strong> One of our coastal adventure specialists will contact you within 24 hours to discuss modifications and create an even better itinerary together.</p>
             </div>
 
             <div class="info-box">
-                <p><strong>📞 We Value Your Vision:</strong> Our goal is to combine your preferences with our local expertise to create the perfect safari experience. This is a collaborative process, and we're here to make your dream safari a reality!</p>
+                <p><strong>📞 We Value Your Vision:</strong> Our goal is to combine your preferences with our local expertise to create the perfect coastal adventure experience. This is a collaborative process, and we're here to make your dream coastal adventure a reality!</p>
             </div>
 
             <p>We appreciate your patience and look forward to working together to design an unforgettable African adventure.</p>
 
             <p>Best regards,<br>
-            <strong>The Kanyanga Safari Team</strong><br>
-            Safari Planning Specialists</p>
+            <strong>The Nomadiq Team</strong><br>
+            coastal adventure Planning Specialists</p>
         </div>
 
         <div class="footer">
-            <p><strong>Kanyanga Safari</strong><br>
-            Email: info@kanyangasafari.com | Phone: +254 700 000 000<br>
-            Website: www.kanyangasafari.com</p>
-            <p><em>Crafting perfect safari experiences together</em></p>
+            <p><strong>Nomadiq</strong><br>
+            Email: info@nomadiq.com | Phone: +254 700 000 000<br>
+            Website: www.nomadiq.com</p>
+            <p><em>Crafting perfect coastal adventure experiences together</em></p>
         </div>
     </div>
 </body>

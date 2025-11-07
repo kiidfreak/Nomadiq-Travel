@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="copperGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C67B52;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A05A3A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#copperGradient)"/>
+  <!-- Wave symbol (N for Nomadiq) -->
+  <path d="M 30 35 Q 35 25, 40 30 Q 45 35, 50 30 Q 55 35, 60 30 Q 65 25, 70 35 L 70 65 Q 65 75, 60 70 Q 55 65, 50 70 Q 45 65, 40 70 Q 35 75, 30 65 Z" fill="white" opacity="0.95"/>
+  <!-- Letter N -->
+  <text x="50" y="70" font-family="serif" font-size="50" font-weight="bold" fill="white" text-anchor="middle" opacity="0.9">N</text>
+</svg>
+

@@ -27,11 +27,12 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             // ->registration()
-            ->brandLogo(fn () => view('components.kanyanga-safari-logo'))
-            ->brandName('Kanyanga Safari')
+            ->brandLogo(fn () => view('components.nomadiq-logo'))
+            ->brandName('Nomadiq')
+            ->favicon(asset('favicon.svg'))
             ->sidebarCollapsibleOnDesktop()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#C67B52'), // Nomadiq Copper
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -40,7 +41,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                \App\Filament\Widgets\WelcomeWidget::class,
+                \App\Filament\Widgets\DashboardStatsOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,

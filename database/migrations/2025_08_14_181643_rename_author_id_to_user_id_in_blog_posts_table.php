@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('blog_posts', function (Blueprint $table) {
-            $table->renameColumn('author_id', 'user_id');
-        });
+        // Check if author_id column exists before renaming
+        if (Schema::hasColumn('blog_posts', 'author_id')) {
+            Schema::table('blog_posts', function (Blueprint $table) {
+                $table->renameColumn('author_id', 'user_id');
+            });
+        }
     }
 
     /**
@@ -21,8 +24,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('blog_posts', function (Blueprint $table) {
-            $table->renameColumn('user_id', 'author_id');
-        });
+        // Check if user_id column exists before renaming
+        if (Schema::hasColumn('blog_posts', 'user_id') && !Schema::hasColumn('blog_posts', 'author_id')) {
+            Schema::table('blog_posts', function (Blueprint $table) {
+                $table->renameColumn('user_id', 'author_id');
+            });
+        }
     }
 };

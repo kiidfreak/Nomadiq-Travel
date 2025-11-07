@@ -20,7 +20,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🦁 Kanyanga Safari</div>
+            <div class="logo">🌊 Nomadiq</div>
             <h2>Custom Itinerary Submitted Successfully!</h2>
         </div>
 
@@ -53,18 +53,18 @@
                 <p><strong>💡 Important:</strong> Please save your reference ID <strong>{{ $reference_id }}</strong> for all future communications about this custom itinerary.</p>
             </div>
 
-            <p>We appreciate your interest in creating a personalized safari experience with us. Kenya's wildlife and landscapes await your discovery!</p>
+            <p>We appreciate your interest in creating a personalized coastal adventure with us. Kenya's pristine beaches and hidden gems await your discovery!</p>
 
             <p>Best regards,<br>
-            <strong>The Kanyanga Safari Team</strong><br>
-            Safari Planning Specialists</p>
+            <strong>The Nomadiq Team</strong><br>
+            Coastal Adventure Specialists</p>
         </div>
 
         <div class="footer">
-            <p><strong>Kanyanga Safari</strong><br>
-            Email: info@kanyangasafari.com | Phone: +254 700 000 000<br>
-            Website: www.kanyangasafari.com</p>
-            <p><em>Creating unforgettable safari memories since 2020</em></p>
+            <p><strong>Nomadiq</strong><br>
+            Email: info@nomadiq.com | Phone: +254 700 000 000<br>
+            Website: www.nomadiq.com</p>
+            <p><em>Live. Connect. Belong. Creating unforgettable coastal memories.</em></p>
         </div>
     </div>
 </body>
