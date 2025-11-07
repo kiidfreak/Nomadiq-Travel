@@ -50,6 +50,79 @@ npm run dev
 
 The frontend will be available at `http://localhost:3000`
 
+## 📸 Screenshots
+
+### Admin Panel Features
+
+#### Dashboard
+![Admin Dashboard](docs/screenshots/admin-dashboard.png)
+- Welcome widget with personalized greeting
+- Key statistics overview (packages, bookings, customers, inquiries)
+- Quick access to all resources
+
+#### Bookings Management
+![Bookings Page](docs/screenshots/admin-bookings.png)
+- View all bookings with status tracking
+- Refresh button for real-time updates
+- Customer and package information
+- Payment status indicators
+
+#### Payment Processing
+![Payments Page](docs/screenshots/admin-payments.png)
+- Track all payments across bookings
+- Payment method and status tracking
+- Manual verification capabilities
+- Transaction history
+
+### Client-Facing Features
+
+#### Homepage
+![Homepage](docs/screenshots/homepage.png)
+- Hero section with Nomadiq branding
+- Scroll-to-explore functionality
+- Featured packages showcase
+- Testimonials and floating memories
+- Call-to-action sections
+
+#### Package Listings
+![Packages](docs/screenshots/packages-listing.png)
+- Browse all available experiences
+- Filter by destination, price, duration
+- Responsive grid layout
+- Quick view and booking options
+
+#### Package Details & Booking
+![Package Detail](docs/screenshots/package-detail.png)
+- Detailed package information
+- What's included/not included
+- Booking form with customer details
+- Ocean waves loading animation
+
+#### Booking Confirmation
+![Booking Confirmation](docs/screenshots/booking-confirmation.png)
+- Booking reference and details
+- Customer information
+- Package summary
+- Next steps information
+- **"Make Payment" button** (if balance > 0)
+
+#### Payment Processing
+![Payment Page](docs/screenshots/payment-page.png)
+- **Accessible from booking confirmation page**
+- Multiple payment methods (M-Pesa, Bank Transfer, Card)
+- Payment history tracking
+- Real-time balance updates
+- Secure payment processing
+
+#### Blog
+![Blog](docs/screenshots/blog-listing.png)
+- Travel stories and insights
+- Category filtering
+- Featured posts
+- Author information
+
+> **Note**: Screenshots should be added to `docs/screenshots/` directory. See [docs/screenshots/README.md](docs/screenshots/README.md) for guidelines.
+
 ## 📦 Features
 
 ### Frontend Features

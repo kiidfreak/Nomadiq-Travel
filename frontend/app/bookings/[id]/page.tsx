@@ -291,7 +291,12 @@ export default function BookingConfirmationPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             {(() => {
               const balance = typeof booking.balance === 'number' ? booking.balance : parseFloat(booking.balance || '0')
-              return balance > 0 && (
+              const totalPaid = typeof booking.total_paid === 'number' ? booking.total_paid : parseFloat(booking.total_paid || '0')
+              const totalAmount = typeof booking.total_amount === 'number' ? booking.total_amount : parseFloat(booking.total_amount || '0')
+              // Show button if balance > 0, or if booking is pending and total_paid < total_amount
+              const hasBalance = balance > 0 || (booking.status === 'pending' && totalPaid < totalAmount && totalAmount > 0)
+              
+              return hasBalance && (
                 <Link
                   href={`/bookings/${params.id}/payment`}
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-nomadiq-copper to-nomadiq-orange text-white text-center rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
