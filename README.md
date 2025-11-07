@@ -55,29 +55,41 @@ The frontend will be available at `http://localhost:3000`
 ### Admin Panel Features
 
 #### Dashboard
-![Admin Dashboard](docs/screenshots/admin-dashboard.png)
+![Admin Dashboard](docs/screenshots/admin-dashboard.png.png)
 - Welcome widget with personalized greeting
 - Key statistics overview (packages, bookings, customers, inquiries)
 - Quick access to all resources
 
 #### Bookings Management
-![Bookings Page](docs/screenshots/admin-bookings.png)
+![Bookings Page](docs/screenshots/admin-bookings.png.png)
 - View all bookings with status tracking
 - Refresh button for real-time updates
 - Customer and package information
 - Payment status indicators
 
 #### Payment Processing
-![Payments Page](docs/screenshots/admin-payments.png)
+![Payments Page](docs/screenshots/admin-payments.png.png)
 - Track all payments across bookings
 - Payment method and status tracking
 - Manual verification capabilities
 - Transaction history
 
+#### Package Management
+![Package Edit](docs/screenshots/admin-package-edit.png.png)
+- Create and edit travel packages
+- Package details, pricing, and itinerary
+- Image uploads and descriptions
+
+#### Blog Management
+![Blog Post](docs/screenshots/admin-blog-post.png.png)
+- Create and publish blog posts
+- Category management
+- Featured images and content
+
 ### Client-Facing Features
 
 #### Homepage
-![Homepage](docs/screenshots/homepage.png)
+![Homepage](docs/screenshots/homepage.png.png)
 - Hero section with Nomadiq branding
 - Scroll-to-explore functionality
 - Featured packages showcase
@@ -85,21 +97,21 @@ The frontend will be available at `http://localhost:3000`
 - Call-to-action sections
 
 #### Package Listings
-![Packages](docs/screenshots/packages-listing.png)
+![Packages](docs/screenshots/packages-listing.png.png)
 - Browse all available experiences
 - Filter by destination, price, duration
 - Responsive grid layout
 - Quick view and booking options
 
 #### Package Details & Booking
-![Package Detail](docs/screenshots/package-detail.png)
+![Package Detail](docs/screenshots/package-detail.png.png)
 - Detailed package information
 - What's included/not included
 - Booking form with customer details
 - Ocean waves loading animation
 
 #### Booking Confirmation
-![Booking Confirmation](docs/screenshots/booking-confirmation.png)
+![Booking Confirmation](docs/screenshots/booking-confirmation.png.png)
 - Booking reference and details
 - Customer information
 - Package summary
@@ -107,7 +119,7 @@ The frontend will be available at `http://localhost:3000`
 - **"Make Payment" button** (if balance > 0)
 
 #### Payment Processing
-![Payment Page](docs/screenshots/payment-page.png)
+![Payment Page](docs/screenshots/payment-page.png.png)
 - **Accessible from booking confirmation page**
 - Multiple payment methods (M-Pesa, Bank Transfer, Card)
 - Payment history tracking
@@ -115,11 +127,28 @@ The frontend will be available at `http://localhost:3000`
 - Secure payment processing
 
 #### Blog
-![Blog](docs/screenshots/blog-listing.png)
+![Blog Listing](docs/screenshots/blog-listing.png.png)
 - Travel stories and insights
 - Category filtering
 - Featured posts
 - Author information
+
+![Blog Post](docs/screenshots/blog-post.png.png)
+- Individual blog post view
+- Full content and images
+- Related posts
+
+#### Contact Page
+![Contact](docs/screenshots/contact-page.png.png)
+- Contact form
+- Business information
+- Contact details
+
+#### About Page
+![About](docs/screenshots/about-page.png.png)
+- Company mission and values
+- Our story
+- Why choose Nomadiq
 
 > **Note**: Screenshots should be added to `docs/screenshots/` directory. See [docs/screenshots/README.md](docs/screenshots/README.md) for guidelines.
 
