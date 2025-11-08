@@ -46,22 +46,59 @@ class FloatingMemoryResource extends Resource
 
                 Forms\Components\Section::make('Memory Details')
                     ->schema([
-                        Forms\Components\FileUpload::make('image_url')
-                            ->label('Safari Photo')
-                            ->image()
+                        Forms\Components\Select::make('media_type')
+                            ->label('Media Type')
+                            ->options([
+                                'image' => 'Image',
+                                'video' => 'Video',
+                            ])
+                            ->default('image')
                             ->required()
+                            ->live(),
+                        Forms\Components\FileUpload::make('image_url')
+                            ->label('Photo/Video')
+                            ->image()
                             ->directory('floating-memories')
-                            ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('4:3')
-                            ->imageResizeTargetWidth('1200')
-                            ->imageResizeTargetHeight('900')
-                            ->maxSize(5120) // 5MB
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->imageResizeMode('contain')
+                            ->imageResizeTargetWidth('2000')
+                            ->imageResizeTargetHeight('3000')
+                            ->maxSize(10240) // 10MB = 10,240 KB
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/quicktime'])
+                            ->helperText('⚠️ Max file size: 10MB (10,240 KB). If your file exceeds this, compress it first using TinyPNG.com or resize it. Images will be automatically resized to 2000px max after upload.')
+                            ->visible(fn ($get) => $get('media_type') === 'image')
+                            ->required(fn ($get) => $get('media_type') === 'image')
+                            ->disk('public')
+                            ->visibility('public')
+                            ->deletable()
+                            ->downloadable()
+                            ->previewable()
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('video_url')
+                            ->label('Video URL')
+                            ->url()
+                            ->placeholder('https://youtube.com/watch?v=... or direct video URL')
+                            ->helperText('Enter YouTube URL or direct video link')
+                            ->visible(fn ($get) => $get('media_type') === 'video')
+                            ->required(fn ($get) => $get('media_type') === 'video')
                             ->columnSpanFull(),
                         Forms\Components\Textarea::make('caption')
+                            ->label('Caption')
                             ->maxLength(300)
                             ->rows(3)
-                            ->placeholder('Describe this beautiful moment from the safari...')
+                            ->placeholder('Brief caption for this memory...')
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('traveler_name')
+                            ->label('Traveler Name')
+                            ->maxLength(100)
+                            ->placeholder('e.g., Sarah from Nairobi'),
+                        Forms\Components\Toggle::make('is_traveler_of_month')
+                            ->label('Traveler of the Month')
+                            ->helperText('Feature this traveler prominently'),
+                        Forms\Components\Textarea::make('story')
+                            ->label('Traveler Story')
+                            ->rows(5)
+                            ->placeholder('Share the full story behind this memory...')
+                            ->helperText('Rich story text - what made this moment special?')
                             ->columnSpanFull(),
                         Forms\Components\DatePicker::make('safari_date')
                             ->label('Safari Date')
@@ -106,6 +143,10 @@ class FloatingMemoryResource extends Resource
                     ->getStateUsing(fn (FloatingMemory $record) => $record->memory_title)
                     ->searchable(['caption'])
                     ->limit(30),
+                Tables\Columns\TextColumn::make('traveler_name')
+                    ->label('Traveler')
+                    ->searchable()
+                    ->limit(25),
                 Tables\Columns\TextColumn::make('caption')
                     ->limit(50)
                     ->placeholder('No caption')
@@ -116,6 +157,17 @@ class FloatingMemoryResource extends Resource
                         }
                         return $state;
                     }),
+                Tables\Columns\TextColumn::make('media_type')
+                    ->label('Type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'video' => 'danger',
+                        'image' => 'success',
+                        default => 'gray',
+                    }),
+                Tables\Columns\IconColumn::make('is_traveler_of_month')
+                    ->label('Featured')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('destination.name')
                     ->searchable()
                     ->sortable()

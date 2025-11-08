@@ -18,7 +18,10 @@ class Package extends Model
      */
     protected $fillable = [
         'title',
+        'theme',
+        'tagline',
         'description',
+        'highlights',
         'duration_days',
         'price_usd',
         'max_participants',
@@ -36,6 +39,7 @@ class Package extends Model
         return [
             'price_usd' => 'decimal:2',
             'is_active' => 'boolean',
+            'highlights' => 'array',
         ];
     }
 

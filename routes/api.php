@@ -52,6 +52,7 @@ Route::prefix('memories')->group(function () {
     Route::get('/', [FloatingMemoryController::class, 'index']);
     Route::get('/latest', [FloatingMemoryController::class, 'latest']);
     Route::get('/by-slots', [FloatingMemoryController::class, 'bySlots']);
+    Route::get('/{id}', [FloatingMemoryController::class, 'show']);
 });
 
 Route::prefix('inquiries')->group(function () {

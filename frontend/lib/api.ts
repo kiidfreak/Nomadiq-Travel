@@ -38,6 +38,7 @@ export const memoriesApi = {
   getAll: () => api.get('/memories'),
   getLatest: (limit?: number) => api.get('/memories/latest', { params: { limit } }),
   getBySlots: () => api.get('/memories/by-slots'),
+  getById: (id: string | number) => api.get(`/memories/${id}`),
 }
 
 export const bookingsApi = {

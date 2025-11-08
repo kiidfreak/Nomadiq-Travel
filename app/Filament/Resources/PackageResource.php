@@ -33,25 +33,72 @@ class PackageResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(200),
+                Forms\Components\Section::make('Package Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(200)
+                            ->columnSpan(2),
+                        Forms\Components\TextInput::make('theme')
+                            ->label('Theme')
+                            ->helperText('e.g., "Dance with the Tide", "Hidden Stories of the Coast"')
+                            ->maxLength(100),
+                        Forms\Components\TextInput::make('tagline')
+                            ->label('Tagline')
+                            ->helperText('e.g., "Two days, one ocean, infinite memories."')
+                            ->maxLength(200),
+                    ])->columns(3),
+                
                 Forms\Components\Textarea::make('description')
+                    ->label('Description')
+                    ->rows(4)
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('duration_days')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('price_usd')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('max_participants')
-                    ->required()
-                    ->numeric()
-                    ->default(8),
-                Forms\Components\FileUpload::make('image_url')
-                    ->image(),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
+                
+                Forms\Components\Section::make('Highlights')
+                    ->schema([
+                        Forms\Components\Repeater::make('highlights')
+                            ->schema([
+                                Forms\Components\TextInput::make('emoji')
+                                    ->label('Emoji')
+                                    ->maxLength(10)
+                                    ->placeholder('🌅')
+                                    ->helperText('Single emoji'),
+                                Forms\Components\Textarea::make('text')
+                                    ->label('Highlight Text')
+                                    ->required()
+                                    ->rows(2)
+                                    ->placeholder('Dhow cruise under a tangerine sunset'),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => $state['text'] ?? null)
+                            ->defaultItems(0)
+                            ->collapsible(),
+                    ])->columnSpanFull(),
+                
+                Forms\Components\Section::make('Package Details')
+                    ->schema([
+                        Forms\Components\TextInput::make('duration_days')
+                            ->required()
+                            ->numeric()
+                            ->label('Duration (Days)'),
+                        Forms\Components\TextInput::make('price_usd')
+                            ->required()
+                            ->numeric()
+                            ->prefix('$')
+                            ->label('Price (USD)'),
+                        Forms\Components\TextInput::make('max_participants')
+                            ->required()
+                            ->numeric()
+                            ->default(8)
+                            ->label('Max Participants'),
+                        Forms\Components\FileUpload::make('image_url')
+                            ->image()
+                            ->label('Package Image')
+                            ->directory('packages'),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Active')
+                            ->default(true),
+                    ])->columns(2),
             ]);
     }
 
@@ -59,21 +106,35 @@ class PackageResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image_url')
+                    ->circular()
+                    ->size(50),
                 Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->weight('bold'),
+                Tables\Columns\TextColumn::make('theme')
+                    ->label('Theme')
+                    ->searchable()
+                    ->limit(30),
+                Tables\Columns\TextColumn::make('tagline')
+                    ->label('Tagline')
+                    ->limit(40)
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('duration_days')
+                    ->label('Days')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price_usd')
+                    ->label('Price')
                     ->numeric()
                     ->sortable()
                     ->prefix('$'),
                 Tables\Columns\TextColumn::make('max_participants')
+                    ->label('Max')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\ImageColumn::make('image_url')
-                    ->circular(),
-                Tables\Columns\ToggleColumn::make('is_active'),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->label('Active'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

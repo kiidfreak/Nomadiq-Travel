@@ -6,11 +6,21 @@ import Link from 'next/link'
 
 interface FloatingMemory {
   id: number
-  title: string
-  location: string
-  date: string
   image_url: string
-  slot: string
+  full_image_url?: string
+  caption?: string
+  safari_date?: string
+  destination?: {
+    id: number
+    name: string
+  }
+  package?: {
+    id: number
+    title: string
+  }
+  slot?: number
+  memory_title?: string
+  memory_age?: string
 }
 
 export default function FloatingMemories() {
@@ -26,33 +36,6 @@ export default function FloatingMemories() {
         }
       } catch (error) {
         console.error('Error fetching memories:', error)
-        // Fallback data
-        setMemories([
-          {
-            id: 1,
-            title: 'Floating Memories',
-            location: 'Samburu National Park',
-            date: 'Sep 2025',
-            image_url: '/images/memory1.jpg',
-            slot: 'morning',
-          },
-          {
-            id: 2,
-            title: 'Maasai Mara Adventure',
-            location: 'Maasai Mara National Reserve',
-            date: 'Aug 2025',
-            image_url: '/images/memory2.jpg',
-            slot: 'afternoon',
-          },
-          {
-            id: 3,
-            title: 'Coastal Escape',
-            location: 'Watamu',
-            date: 'Oct 2025',
-            image_url: '/images/memory3.jpg',
-            slot: 'evening',
-          },
-        ])
       } finally {
         setLoading(false)
       }
@@ -78,6 +61,39 @@ export default function FloatingMemories() {
     )
   }
 
+  if (memories.length === 0) {
+    return null
+  }
+
+  const getImageUrl = (imageUrl: string) => {
+    if (!imageUrl) return '/images/logo.jpg'
+    
+    // If it's already a full URL, use it
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      // Replace localhost with nevcompany2.test for storage URLs
+      if (imageUrl.includes('localhost') && imageUrl.includes('/storage/')) {
+        return imageUrl.replace('http://localhost', 'https://nevcompany2.test')
+      }
+      return imageUrl
+    }
+    
+    // If it's a relative path starting with /storage, prepend the API URL domain
+    if (imageUrl.startsWith('/storage/') || imageUrl.startsWith('storage/')) {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://nevcompany2.test/api'
+      const baseUrl = apiUrl.replace('/api', '')
+      return `${baseUrl}/${imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl}`
+    }
+    
+    return imageUrl
+  }
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+  }
+
+
   return (
     <section className="py-20 bg-gradient-to-b from-nomadiq-bone to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,21 +101,40 @@ export default function FloatingMemories() {
           Floating Memories
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {memories.map((memory) => (
-            <Link
-              key={memory.id}
-              href={`/memories/${memory.id}`}
-              className="group relative overflow-hidden rounded-2xl aspect-[4/3] bg-gradient-to-br from-nomadiq-copper/20 to-nomadiq-teal/20 hover:shadow-2xl transition-all duration-300"
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-nomadiq-black/60 via-nomadiq-black/20 to-transparent z-10"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-6 z-20 text-white">
-                <h3 className="text-xl font-serif font-bold mb-2">{memory.title}</h3>
-                <p className="text-sm opacity-90">
-                  {memory.location} · {memory.date}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {memories.map((memory) => {
+            const title = memory.memory_title || memory.destination?.name || 'Safari Memory'
+            const location = memory.destination?.name || memory.package?.title || ''
+            const date = formatDate(memory.safari_date)
+            
+            return (
+              <Link
+                key={memory.id}
+                href={`/memories/${memory.id}`}
+                className="group relative rounded-2xl bg-gradient-to-br from-nomadiq-copper/20 to-nomadiq-teal/20 hover:shadow-2xl transition-all duration-300 cursor-pointer block overflow-hidden"
+              >
+                {(memory.full_image_url || memory.image_url) && (
+                  <div className="relative w-full">
+                    <img
+                      src={getImageUrl(memory.full_image_url || memory.image_url)}
+                      alt={memory.caption || title}
+                      className="w-full h-auto block"
+                      loading="lazy"
+                      style={{ display: 'block', maxWidth: '100%' }}
+                    />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-nomadiq-black/80 via-transparent to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6 z-20 text-white pointer-events-none">
+                  <h3 className="text-xl font-serif font-bold mb-2 group-hover:text-nomadiq-copper transition-colors">
+                    {title}
+                  </h3>
+                  <p className="text-sm opacity-90">
+                    {location && date ? `${location} · ${date}` : location || date}
+                  </p>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </div>
     </section>

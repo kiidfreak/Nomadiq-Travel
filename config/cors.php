@@ -24,9 +24,15 @@ return [
         'http://localhost:3001',
         'http://localhost:3002',
         'https://nevcompany2.test',
+        'https://nomadiq.com',
+        'https://www.nomadiq.com',
+        'https://nomadiq-travel.vercel.app',
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '/^https:\/\/.*\.vercel\.app$/', // Vercel preview deployments
+        '/^https:\/\/.*\.railway\.app$/', // Railway preview deployments
+    ],
 
     'allowed_headers' => ['*'],
 

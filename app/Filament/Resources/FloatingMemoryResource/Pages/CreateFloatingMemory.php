@@ -28,4 +28,14 @@ class CreateFloatingMemory extends CreateRecord
     {
         return 'Safari memory added successfully!';
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        // Handle file size validation more gracefully
+        if (isset($data['image_url']) && is_array($data['image_url'])) {
+            // Filament handles file upload, but we can add custom validation here if needed
+        }
+        
+        return $data;
+    }
 }

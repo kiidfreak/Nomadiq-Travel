@@ -14,7 +14,12 @@ class FloatingMemory extends Model
         'destination_id',
         'package_id',
         'image_url',
+        'video_url',
+        'media_type',
         'caption',
+        'traveler_name',
+        'story',
+        'is_traveler_of_month',
         'safari_date',
         'slot',
         'is_published',
@@ -23,7 +28,10 @@ class FloatingMemory extends Model
     protected $casts = [
         'safari_date' => 'date',
         'is_published' => 'boolean',
+        'is_traveler_of_month' => 'boolean',
     ];
+
+    protected $appends = ['full_image_url'];
 
     public function destination(): BelongsTo
     {
@@ -81,5 +89,46 @@ class FloatingMemory extends Model
         }
         
         return $title ?: 'Safari Memory';
+    }
+
+    /**
+     * Get the full URL for the image
+     */
+    public function getFullImageUrlAttribute(): ?string
+    {
+        $value = $this->attributes['image_url'] ?? null;
+        
+        if (!$value) {
+            return null;
+        }
+
+        // If it's already a full URL, return as is
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            // Replace localhost with the correct domain if needed
+            $appUrl = config('app.url');
+            if (str_contains($value, 'localhost') && $appUrl && !str_contains($appUrl, 'localhost')) {
+                return str_replace('http://localhost', rtrim($appUrl, '/'), $value);
+            }
+            return $value;
+        }
+
+        // Get the app URL and ensure it doesn't use localhost
+        $appUrl = config('app.url', 'https://nevcompany2.test');
+        
+        // If APP_URL is localhost, use nevcompany2.test instead
+        if (str_contains($appUrl, 'localhost')) {
+            $appUrl = 'https://nevcompany2.test';
+        }
+        
+        // Remove /storage if already in the path
+        $path = $value;
+        if (!str_starts_with($path, 'storage/') && !str_starts_with($path, '/storage/')) {
+            $path = 'storage/' . ltrim($path, '/');
+        } else {
+            $path = ltrim($path, '/');
+        }
+        
+        // Return full URL
+        return rtrim($appUrl, '/') . '/' . $path;
     }
 }

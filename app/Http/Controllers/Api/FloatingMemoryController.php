@@ -68,4 +68,22 @@ class FloatingMemoryController extends Controller
             'data' => $memories,
         ]);
     }
+
+    /**
+     * Display a single memory.
+     * 
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id)
+    {
+        $memory = FloatingMemory::where('is_published', true)
+            ->with(['destination', 'package'])
+            ->findOrFail($id);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $memory,
+        ]);
+    }
 }
