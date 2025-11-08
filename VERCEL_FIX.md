@@ -21,14 +21,13 @@ Error: No Output Directory named "dist" found
 A `vercel.json` file has been created in the root with:
 ```json
 {
-  "rootDirectory": "frontend",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs"
 }
 ```
 
-**Note**: You still need to set Root Directory in Vercel UI for this to work properly.
+**Note**: The `rootDirectory` must be set in Vercel UI (Settings → General → Root Directory), not in `vercel.json`. The `vercel.json` file only contains build configuration.
 
 ## Steps to Fix
 
