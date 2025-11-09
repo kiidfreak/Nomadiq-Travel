@@ -20,7 +20,26 @@ class PackageController extends Controller
                 $query->where('is_active', true);
             }])
             ->where('is_active', true)
-            ->get();
+            ->get()
+            ->map(function($package) {
+                // Ensure image_url is a full URL
+                if ($package->image_url && !filter_var($package->image_url, FILTER_VALIDATE_URL)) {
+                    $appUrl = config('app.url', 'https://nevcompany2.test');
+                    if (str_contains($appUrl, 'localhost')) {
+                        $appUrl = 'https://nevcompany2.test';
+                    }
+                    // Handle both storage/packages/... and packages/... formats
+                    $imagePath = $package->image_url;
+                    if (!str_starts_with($imagePath, 'storage/')) {
+                        if (!str_starts_with($imagePath, 'packages/') && !str_starts_with($imagePath, '/packages/')) {
+                            $imagePath = 'packages/' . ltrim($imagePath, '/');
+                        }
+                        $imagePath = 'storage/' . ltrim($imagePath, '/');
+                    }
+                    $package->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
+                }
+                return $package;
+            });
         
         return response()->json([
             'success' => true,
@@ -46,6 +65,23 @@ class PackageController extends Controller
             ])
             ->findOrFail($id);
         
+        // Ensure image_url is a full URL
+        if ($package->image_url && !filter_var($package->image_url, FILTER_VALIDATE_URL)) {
+            $appUrl = config('app.url', 'https://nevcompany2.test');
+            if (str_contains($appUrl, 'localhost')) {
+                $appUrl = 'https://nevcompany2.test';
+            }
+            // Handle both storage/packages/... and packages/... formats
+            $imagePath = $package->image_url;
+            if (!str_starts_with($imagePath, 'storage/')) {
+                if (!str_starts_with($imagePath, 'packages/') && !str_starts_with($imagePath, '/packages/')) {
+                    $imagePath = 'packages/' . ltrim($imagePath, '/');
+                }
+                $imagePath = 'storage/' . ltrim($imagePath, '/');
+            }
+            $package->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
+        }
+        
         return response()->json([
             'success' => true,
             'data' => $package,
@@ -64,7 +100,26 @@ class PackageController extends Controller
             }])
             ->where('is_active', true)
             ->take(3)
-            ->get();
+            ->get()
+            ->map(function($package) {
+                // Ensure image_url is a full URL
+                if ($package->image_url && !filter_var($package->image_url, FILTER_VALIDATE_URL)) {
+                    $appUrl = config('app.url', 'https://nevcompany2.test');
+                    if (str_contains($appUrl, 'localhost')) {
+                        $appUrl = 'https://nevcompany2.test';
+                    }
+                    // Handle both storage/packages/... and packages/... formats
+                    $imagePath = $package->image_url;
+                    if (!str_starts_with($imagePath, 'storage/')) {
+                        if (!str_starts_with($imagePath, 'packages/') && !str_starts_with($imagePath, '/packages/')) {
+                            $imagePath = 'packages/' . ltrim($imagePath, '/');
+                        }
+                        $imagePath = 'storage/' . ltrim($imagePath, '/');
+                    }
+                    $package->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
+                }
+                return $package;
+            });
         
         return response()->json([
             'success' => true,

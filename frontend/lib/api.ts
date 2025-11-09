@@ -47,6 +47,7 @@ export const bookingsApi = {
     start_date: string
     number_of_people: number
     special_requests?: string
+    selected_micro_experiences?: number[]
     customer: {
       name: string
       email: string
@@ -97,5 +98,16 @@ export const blogPostsApi = {
   getAll: () => api.get('/blog-posts'),
   getById: (id: string | number) => api.get(`/blog-posts/${id}`),
   getBySlug: (slug: string) => api.get(`/blog-posts/slug/${slug}`),
+}
+
+export const microExperiencesApi = {
+  getAll: (packageId?: number) => api.get('/micro-experiences', { params: packageId ? { package_id: packageId } : {} }),
+  getById: (id: string | number) => api.get(`/micro-experiences/${id}`),
+  getByCategory: (category?: string) => api.get('/micro-experiences/category', { params: { category } }),
+}
+
+export const settingsApi = {
+  getAll: () => api.get('/settings'),
+  getByKey: (key: string) => api.get(`/settings/${key}`),
 }
 

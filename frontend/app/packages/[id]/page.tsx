@@ -5,17 +5,21 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { packagesApi, bookingsApi } from '@/lib/api'
-import { MapPin, Star, Calendar, Users, ArrowLeft, Check, X, Info, AlertCircle, Map } from 'lucide-react'
+import { packagesApi, bookingsApi, microExperiencesApi, settingsApi } from '@/lib/api'
+import { MapPin, Star, Calendar, Users, ArrowLeft, Check, X, Info, AlertCircle, Map, Plus, Minus } from 'lucide-react'
+import { fetchCurrencyRate, usdToKsh, formatKsh, formatUsd, setUsdToKshRate } from '@/lib/currency'
 
 interface Package {
   id: number
   title: string
+  theme?: string
+  tagline?: string
   description: string
   duration_days: number
   price_usd: number
   max_participants: number
   image_url: string
+  highlights?: Array<{ emoji?: string; text: string }>
   destinations?: Array<{ name: string }>
   itineraries?: Array<{
     id: number
@@ -42,16 +46,32 @@ export default function PackageDetailPage() {
     },
   })
   const [isBooking, setIsBooking] = useState(false)
+  const [microExperiences, setMicroExperiences] = useState<any[]>([])
+  const [selectedAddons, setSelectedAddons] = useState<number[]>([])
+  const [currencyRate, setCurrencyRate] = useState(140)
 
   useEffect(() => {
-    const fetchPackage = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch currency rate
+        const rate = await fetchCurrencyRate()
+        setCurrencyRate(rate)
+        setUsdToKshRate(rate)
+
+        // Fetch package
         const response = await packagesApi.getById(params.id as string)
         if (response.data.success) {
-          setPackageData(response.data.data)
+          const pkg = response.data.data
+          setPackageData(pkg)
+          
+          // Fetch micro experiences for this package
+          const experiencesResponse = await microExperiencesApi.getAll(pkg.id)
+          if (experiencesResponse.data.success) {
+            setMicroExperiences(experiencesResponse.data.data)
+          }
         }
       } catch (error) {
-        console.error('Error fetching package:', error)
+        console.error('Error fetching data:', error)
         // Fallback data
         if (params.id === '1') {
           setPackageData({
@@ -116,7 +136,7 @@ export default function PackageDetailPage() {
     }
 
     if (params.id) {
-      fetchPackage()
+      fetchData()
     }
   }, [params.id])
 
@@ -129,6 +149,7 @@ export default function PackageDetailPage() {
         start_date: bookingData.start_date,
         number_of_people: bookingData.number_of_people,
         special_requests: bookingData.special_requests || undefined,
+        selected_micro_experiences: selectedAddons.length > 0 ? selectedAddons : undefined,
         customer: {
           name: bookingData.customer.name,
           email: bookingData.customer.email,
@@ -200,6 +221,16 @@ export default function PackageDetailPage() {
       <main className="pt-20">
         {/* Hero Image */}
         <section className="relative h-[60vh] bg-gradient-to-br from-nomadiq-copper/30 to-nomadiq-teal/30 overflow-hidden">
+          {packageData.image_url && (
+            <img
+              src={packageData.image_url}
+              alt={packageData.title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+              }}
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-nomadiq-black/60 via-nomadiq-black/20 to-transparent z-10"></div>
           <div className="absolute bottom-0 left-0 right-0 p-8 z-20 text-white">
             <Link
@@ -209,7 +240,15 @@ export default function PackageDetailPage() {
               <ArrowLeft className="w-5 h-5" />
               <span>Back to Packages</span>
             </Link>
-            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">{packageData.title}</h1>
+            {packageData.theme && (
+              <div className="text-nomadiq-copper/90 text-sm font-semibold uppercase tracking-wide mb-2">
+                {packageData.theme}
+              </div>
+            )}
+            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-2">{packageData.title}</h1>
+            {packageData.tagline && (
+              <p className="text-lg text-white/90 italic">{packageData.tagline}</p>
+            )}
           </div>
         </section>
 
@@ -331,39 +370,21 @@ export default function PackageDetailPage() {
                 </div>
 
                 {/* Highlights */}
-                <div className="bg-gradient-to-br from-nomadiq-copper/10 to-nomadiq-teal/10 rounded-2xl p-8 border border-nomadiq-sand/30 mb-8">
-                  <h2 className="text-2xl font-serif font-bold mb-6 text-nomadiq-black">Experience Highlights</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex items-start space-x-3">
-                      <Star className="w-5 h-5 text-nomadiq-copper mt-0.5 flex-shrink-0 fill-nomadiq-copper" />
-                      <div>
-                        <h3 className="font-semibold text-nomadiq-black mb-1">Beachfront Accommodation</h3>
-                        <p className="text-nomadiq-black/70 text-sm">Stay in a beautiful beachfront villa with stunning ocean views</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <Star className="w-5 h-5 text-nomadiq-copper mt-0.5 flex-shrink-0 fill-nomadiq-copper" />
-                      <div>
-                        <h3 className="font-semibold text-nomadiq-black mb-1">Sunset Dhow Experience</h3>
-                        <p className="text-nomadiq-black/70 text-sm">Magical sunset dhow ride along the pristine coastline</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <Star className="w-5 h-5 text-nomadiq-copper mt-0.5 flex-shrink-0 fill-nomadiq-copper" />
-                      <div>
-                        <h3 className="font-semibold text-nomadiq-black mb-1">Beach Party</h3>
-                        <p className="text-nomadiq-black/70 text-sm">Vibrant beach party at Papa Remo Beach</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <Star className="w-5 h-5 text-nomadiq-copper mt-0.5 flex-shrink-0 fill-nomadiq-copper" />
-                      <div>
-                        <h3 className="font-semibold text-nomadiq-black mb-1">Sand Dunes Adventure</h3>
-                        <p className="text-nomadiq-black/70 text-sm">Exciting sand dunes excursion to Mambrui</p>
-                      </div>
+                {packageData.highlights && packageData.highlights.length > 0 && (
+                  <div className="bg-gradient-to-br from-nomadiq-copper/10 to-nomadiq-teal/10 rounded-2xl p-8 border border-nomadiq-sand/30 mb-8">
+                    <h2 className="text-2xl font-serif font-bold mb-6 text-nomadiq-black">Experience Highlights</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {packageData.highlights.map((highlight, idx) => (
+                        <div key={idx} className="flex items-start space-x-3">
+                          <span className="text-2xl mt-0.5 flex-shrink-0">{highlight.emoji || '✨'}</span>
+                          <div>
+                            <p className="text-nomadiq-black/80 font-medium">{highlight.text}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Important Information */}
                 <div className="bg-white rounded-2xl p-8 border border-nomadiq-sand/30 mb-8">
@@ -466,11 +487,118 @@ export default function PackageDetailPage() {
                         <span>{packageData.destinations[0].name}</span>
                       </div>
                     )}
-                    <div className="text-4xl font-serif font-bold text-nomadiq-copper mb-2">
-                      ${packageData.price_usd}
+                    {/* Price Display */}
+                    <div className="mb-2">
+                      <div className="text-4xl font-serif font-bold text-nomadiq-copper group/price relative">
+                        {formatKsh(usdToKsh(packageData.price_usd))}
+                        <span className="text-lg font-normal text-nomadiq-black/40 ml-2 hidden group-hover/price:inline-block">
+                          ({formatUsd(packageData.price_usd)})
+                        </span>
+                      </div>
+                      <div className="text-sm text-nomadiq-black/60">per person</div>
+                      {/* Total with add-ons */}
+                      {selectedAddons.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-nomadiq-sand/30">
+                          <div className="text-sm text-nomadiq-black/70 mb-1">Package Total:</div>
+                          <div className="text-xl font-semibold text-nomadiq-copper">
+                            {formatKsh(usdToKsh(packageData.price_usd * bookingData.number_of_people))}
+                          </div>
+                          <div className="text-xs text-nomadiq-black/50">
+                            {formatUsd(packageData.price_usd * bookingData.number_of_people)}
+                          </div>
+                          <div className="text-sm text-nomadiq-black/70 mt-2 mb-1">Add-ons Total:</div>
+                          <div className="text-lg font-semibold text-nomadiq-copper">
+                            {formatKsh(usdToKsh(
+                              microExperiences
+                                .filter(e => selectedAddons.includes(e.id))
+                                .reduce((sum, e) => sum + (e.price_usd || 0), 0)
+                            ))}
+                          </div>
+                          <div className="text-xs text-nomadiq-black/50 mb-2">
+                            {formatUsd(
+                              microExperiences
+                                .filter(e => selectedAddons.includes(e.id))
+                                .reduce((sum, e) => sum + (e.price_usd || 0), 0)
+                            )}
+                          </div>
+                          <div className="text-sm font-semibold text-nomadiq-black/80 pt-2 border-t border-nomadiq-sand/30">
+                            Grand Total:
+                          </div>
+                          <div className="text-2xl font-bold text-nomadiq-copper">
+                            {formatKsh(usdToKsh(
+                              (packageData.price_usd * bookingData.number_of_people) +
+                              microExperiences
+                                .filter(e => selectedAddons.includes(e.id))
+                                .reduce((sum, e) => sum + (e.price_usd || 0), 0)
+                            ))}
+                          </div>
+                          <div className="text-xs text-nomadiq-black/50">
+                            {formatUsd(
+                              (packageData.price_usd * bookingData.number_of_people) +
+                              microExperiences
+                                .filter(e => selectedAddons.includes(e.id))
+                                .reduce((sum, e) => sum + (e.price_usd || 0), 0)
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="text-sm text-nomadiq-black/60">per person</div>
                   </div>
+
+                  {/* Add-On Experiences */}
+                  {microExperiences.length > 0 && (
+                    <div className="border-t border-nomadiq-sand/30 pt-6 mb-6">
+                      <h3 className="text-lg font-semibold text-nomadiq-black mb-4">Add-On Experiences</h3>
+                      <div className="space-y-3 max-h-64 overflow-y-auto">
+                        {microExperiences.map((experience) => (
+                          <label
+                            key={experience.id}
+                            className="flex items-start space-x-3 p-3 border border-nomadiq-sand/30 rounded-lg cursor-pointer hover:bg-nomadiq-sand/10 transition-colors"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedAddons.includes(experience.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedAddons([...selectedAddons, experience.id])
+                                } else {
+                                  setSelectedAddons(selectedAddons.filter(id => id !== experience.id))
+                                }
+                              }}
+                              className="mt-1 w-4 h-4 text-nomadiq-copper border-nomadiq-sand/30 rounded focus:ring-nomadiq-copper"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                  {experience.emoji && (
+                                    <span className="text-xl">{experience.emoji}</span>
+                                  )}
+                                  <span className="font-medium text-nomadiq-black text-sm">
+                                    {experience.title}
+                                  </span>
+                                </div>
+                                {experience.price_usd && (
+                                  <div className="text-right group/price">
+                                    <div className="font-semibold text-nomadiq-copper text-sm">
+                                      {formatKsh(usdToKsh(experience.price_usd))}
+                                    </div>
+                                    <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
+                                      {formatUsd(experience.price_usd)}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                              {experience.description && (
+                                <p className="text-xs text-nomadiq-black/60 mt-1 line-clamp-2">
+                                  {experience.description}
+                                </p>
+                              )}
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <form onSubmit={handleBooking} className="space-y-4">
                     <div className="border-b border-nomadiq-sand/30 pb-4 mb-4">

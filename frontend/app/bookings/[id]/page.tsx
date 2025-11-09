@@ -7,6 +7,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { bookingsApi } from '@/lib/api'
 import { CheckCircle, Calendar, Users, MapPin, ArrowLeft, Mail, Phone } from 'lucide-react'
+import { fetchCurrencyRate, usdToKsh, formatKsh, formatUsd, setUsdToKshRate } from '@/lib/currency'
 
 interface Booking {
   id: number
@@ -17,6 +18,12 @@ interface Booking {
   total_amount: number | string
   status: string
   special_requests?: string
+  selected_micro_experiences?: Array<{
+    id: number
+    title: string
+    price_usd?: number
+  }>
+  addons_total?: number | string
   balance?: number | string
   total_paid?: number | string
   package?: {
@@ -39,10 +46,17 @@ export default function BookingConfirmationPage() {
   const [booking, setBooking] = useState<Booking | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [currencyRate, setCurrencyRate] = useState(140)
 
   useEffect(() => {
-    const fetchBooking = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch currency rate
+        const rate = await fetchCurrencyRate()
+        setCurrencyRate(rate)
+        setUsdToKshRate(rate)
+
+        // Fetch booking
         const response = await bookingsApi.getById(params.id as string)
         if (response.data.success) {
           // Handle nested response structure from backend
@@ -52,7 +66,7 @@ export default function BookingConfirmationPage() {
           setError('Booking not found')
         }
       } catch (error: any) {
-        console.error('Error fetching booking:', error)
+        console.error('Error fetching data:', error)
         if (error.response?.status === 404) {
           setError('Booking not found')
         } else {
@@ -64,7 +78,7 @@ export default function BookingConfirmationPage() {
     }
 
     if (params.id) {
-      fetchBooking()
+      fetchData()
     }
   }, [params.id])
 
@@ -172,12 +186,15 @@ export default function BookingConfirmationPage() {
 
               <div className="flex items-start space-x-3">
                 <div className="w-5 h-5 text-nomadiq-copper mt-0.5 flex-shrink-0 flex items-center justify-center">
-                  <span className="text-lg font-bold">$</span>
+                  <span className="text-lg font-bold">KSh</span>
                 </div>
-                <div>
+                <div className="group/price">
                   <div className="text-sm text-nomadiq-black/60 mb-1">Total Amount</div>
                   <div className="font-semibold text-nomadiq-black text-xl">
-                    ${typeof booking.total_amount === 'number' ? booking.total_amount.toFixed(2) : parseFloat(booking.total_amount || '0').toFixed(2)}
+                    {formatKsh(usdToKsh(typeof booking.total_amount === 'number' ? booking.total_amount : parseFloat(booking.total_amount || '0')))}
+                  </div>
+                  <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
+                    {formatUsd(typeof booking.total_amount === 'number' ? booking.total_amount : parseFloat(booking.total_amount || '0'))}
                   </div>
                 </div>
               </div>
@@ -186,7 +203,54 @@ export default function BookingConfirmationPage() {
             {booking.package && (
               <div className="pt-6 border-t border-nomadiq-sand/30">
                 <h3 className="font-semibold text-nomadiq-black mb-3">Package</h3>
-                <p className="text-nomadiq-black/80">{booking.package.title}</p>
+                <div className="flex justify-between items-center">
+                  <p className="text-nomadiq-black/80">{booking.package.title}</p>
+                  <div className="text-right group/price">
+                    <div className="font-semibold text-nomadiq-copper">
+                      {formatKsh(usdToKsh(booking.package.price_usd * booking.number_of_people))}
+                    </div>
+                    <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
+                      {formatUsd(booking.package.price_usd * booking.number_of_people)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Selected Add-ons */}
+            {booking.selected_micro_experiences && booking.selected_micro_experiences.length > 0 && (
+              <div className="pt-6 border-t border-nomadiq-sand/30">
+                <h3 className="font-semibold text-nomadiq-black mb-3">Selected Add-ons</h3>
+                <div className="space-y-2">
+                  {booking.selected_micro_experiences.map((addon, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-2">
+                      <span className="text-nomadiq-black/80">{addon.title}</span>
+                      {addon.price_usd && (
+                        <div className="text-right group/price">
+                          <span className="font-semibold text-nomadiq-copper">
+                            {formatKsh(usdToKsh(addon.price_usd))}
+                          </span>
+                          <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
+                            {formatUsd(addon.price_usd)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {booking.addons_total && parseFloat(String(booking.addons_total)) > 0 && (
+                    <div className="pt-2 border-t border-nomadiq-sand/30 flex justify-between items-center font-semibold">
+                      <span className="text-nomadiq-black">Add-ons Total:</span>
+                      <div className="text-right group/price">
+                        <span className="text-nomadiq-copper">
+                          {formatKsh(usdToKsh(parseFloat(String(booking.addons_total))))}
+                        </span>
+                        <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
+                          {formatUsd(parseFloat(String(booking.addons_total)))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

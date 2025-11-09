@@ -2,6 +2,7 @@ import Hero from '@/components/Hero'
 import Stats from '@/components/Stats'
 import FloatingMemories from '@/components/FloatingMemories'
 import Packages from '@/components/Packages'
+import MicroExperiences from '@/components/MicroExperiences'
 import Testimonials from '@/components/Testimonials'
 import CTA from '@/components/CTA'
 import Footer from '@/components/Footer'
@@ -15,6 +16,7 @@ export default function Home() {
       <Stats />
       <FloatingMemories />
       <Packages />
+      <MicroExperiences />
       <Testimonials />
       <CTA />
       <Footer />

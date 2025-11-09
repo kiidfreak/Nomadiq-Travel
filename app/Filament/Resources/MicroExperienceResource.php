@@ -83,7 +83,17 @@ class MicroExperienceResource extends Resource
                             ->image()
                             ->directory('micro-experiences')
                             ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('16:9'),
+                            ->imageCropAspectRatio('16:9')
+                            ->imageResizeTargetWidth('1200')
+                            ->imageResizeTargetHeight('675')
+                            ->maxSize(10240) // 10MB
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->helperText('Max file size: 10MB. Images will be automatically resized to 1200x675px (16:9 ratio).')
+                            ->disk('public')
+                            ->visibility('public')
+                            ->deletable()
+                            ->downloadable()
+                            ->previewable(),
                         Forms\Components\TextInput::make('sort_order')
                             ->label('Sort Order')
                             ->numeric()
@@ -102,8 +112,6 @@ class MicroExperienceResource extends Resource
                             ->helperText('Select which packages this experience can be added to')
                             ->searchable()
                             ->bulkToggleable()
-                            ->deserializeStateUsing(fn ($state) => is_array($state) ? $state : json_decode($state ?? '[]', true))
-                            ->dehydrateStateUsing(fn ($state) => is_array($state) ? $state : [])
                             ->columnSpanFull(),
                     ]),
             ]);

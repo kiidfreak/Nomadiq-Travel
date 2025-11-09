@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Package;
+use App\Models\MicroExperience;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +34,8 @@ class BookingController extends Controller
                 'start_date' => 'required|date|after:today',
                 'number_of_people' => 'required|integer|min:1|max:50',
                 'special_requests' => 'nullable|string|max:1000',
+                'selected_micro_experiences' => 'nullable|array',
+                'selected_micro_experiences.*' => 'exists:micro_experiences,id',
             ]);
 
             // Ensure either customer_id or customer data is provided
@@ -63,6 +66,26 @@ class BookingController extends Controller
                     }
                 }
                 
+                // Calculate add-ons total
+                $addonsTotal = 0;
+                $selectedMicroExperiences = [];
+                if (!empty($validatedData['selected_micro_experiences'])) {
+                    $microExperiences = MicroExperience::whereIn('id', $validatedData['selected_micro_experiences'])
+                        ->where('is_active', true)
+                        ->get();
+                    
+                    foreach ($microExperiences as $experience) {
+                        if ($experience->price_usd) {
+                            $addonsTotal += $experience->price_usd;
+                        }
+                        $selectedMicroExperiences[] = [
+                            'id' => $experience->id,
+                            'title' => $experience->title,
+                            'price_usd' => $experience->price_usd,
+                        ];
+                    }
+                }
+                
                 // Create booking
                 $bookingData = [
                     'customer_id' => $customer->id,
@@ -70,11 +93,13 @@ class BookingController extends Controller
                     'start_date' => $validatedData['start_date'],
                     'number_of_people' => $validatedData['number_of_people'],
                     'special_requests' => $validatedData['special_requests'] ?? null,
+                    'selected_micro_experiences' => $selectedMicroExperiences,
+                    'addons_total' => $addonsTotal,
                 ];
                 
                 $booking = new Booking($bookingData);
                 $booking->booking_reference = Booking::generateBookingReference();
-                $booking->total_amount = $package->price_usd * $validatedData['number_of_people'];
+                $booking->total_amount = ($package->price_usd * $validatedData['number_of_people']) + $addonsTotal;
                 $booking->status = 'pending';
                 $booking->save();
 

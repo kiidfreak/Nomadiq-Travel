@@ -2,27 +2,38 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { packagesApi } from '@/lib/api'
+import { packagesApi, settingsApi } from '@/lib/api'
 import { MapPin, Star, Calendar } from 'lucide-react'
+import { fetchCurrencyRate, usdToKsh, formatKsh, formatUsd, setUsdToKshRate } from '@/lib/currency'
 
 interface Package {
   id: number
   title: string
+  theme?: string
+  tagline?: string
   description: string
   duration_days: number
   price_usd: number
   max_participants: number
   image_url: string
+  highlights?: Array<{ emoji?: string; text: string }>
   destinations?: Array<{ name: string }>
 }
 
 export default function Packages() {
   const [packages, setPackages] = useState<Package[]>([])
   const [loading, setLoading] = useState(true)
+  const [currencyRate, setCurrencyRate] = useState(140)
 
   useEffect(() => {
-    const fetchPackages = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch currency rate
+        const rate = await fetchCurrencyRate()
+        setCurrencyRate(rate)
+        setUsdToKshRate(rate)
+
+        // Fetch packages
         const response = await packagesApi.getFeatured()
         if (response.data.success) {
           setPackages(response.data.data)
@@ -57,7 +68,7 @@ export default function Packages() {
       }
     }
 
-    fetchPackages()
+    fetchData()
   }, [])
 
   if (loading) {
@@ -103,6 +114,17 @@ export default function Packages() {
             >
               {/* Image */}
               <div className="relative h-64 bg-gradient-to-br from-nomadiq-copper/30 to-nomadiq-teal/30 overflow-hidden">
+                {pkg.image_url ? (
+                  <img
+                    src={pkg.image_url}
+                    alt={pkg.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      // Fallback to gradient if image fails to load
+                      e.currentTarget.style.display = 'none'
+                    }}
+                  />
+                ) : null}
                 <div className="absolute top-4 right-4 bg-nomadiq-black/80 text-white px-4 py-2 rounded-lg text-sm font-semibold">
                   {pkg.duration_days} {pkg.duration_days === 1 ? 'day' : 'days'}
                 </div>
@@ -127,16 +149,36 @@ export default function Packages() {
                   )}
                 </div>
 
+                {/* Highlights with emojis */}
+                {pkg.highlights && pkg.highlights.length > 0 && (
+                  <div className="mb-4 space-y-2">
+                    {pkg.highlights.slice(0, 3).map((highlight, idx) => (
+                      <div key={idx} className="flex items-start space-x-2 text-sm text-nomadiq-black/80">
+                        <span className="text-lg">{highlight.emoji || '✨'}</span>
+                        <span className="flex-1">{highlight.text}</span>
+                      </div>
+                    ))}
+                    {pkg.highlights.length > 3 && (
+                      <div className="text-xs text-nomadiq-black/60 italic">
+                        +{pkg.highlights.length - 3} more highlights
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <p className="text-nomadiq-black/70 mb-4 line-clamp-3">
                   {pkg.description}
                 </p>
 
                 <div className="flex items-center justify-between pt-4 border-t border-nomadiq-sand/30">
-                  <div>
-                    <span className="text-2xl font-serif font-bold text-nomadiq-copper">
-                      ${pkg.price_usd}
-                    </span>
-                    <span className="text-nomadiq-black/60 text-sm ml-2">per person</span>
+                  <div className="group/price">
+                    <div className="text-2xl font-serif font-bold text-nomadiq-copper">
+                      {formatKsh(usdToKsh(pkg.price_usd))}
+                    </div>
+                    <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
+                      {formatUsd(pkg.price_usd)}
+                    </div>
+                    <span className="text-nomadiq-black/60 text-sm block mt-1">per person</span>
                   </div>
                   <span className="text-nomadiq-copper font-semibold group-hover:translate-x-2 transition-transform">
                     View Details →

@@ -39,7 +39,19 @@ class DestinationResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('image_url')
-                    ->image(),
+                    ->image()
+                    ->directory('destinations')
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('16:9')
+                    ->imageResizeTargetWidth('1200')
+                    ->imageResizeTargetHeight('675')
+                    ->maxSize(10240) // 10MB
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->disk('public')
+                    ->visibility('public')
+                    ->deletable()
+                    ->downloadable()
+                    ->previewable(),
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
             ]);

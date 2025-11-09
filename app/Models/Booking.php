@@ -19,11 +19,15 @@ class Booking extends Model
         'total_amount',
         'status',
         'special_requests',
+        'selected_micro_experiences',
+        'addons_total',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'total_amount' => 'decimal:2',
+        'addons_total' => 'decimal:2',
+        'selected_micro_experiences' => 'array',
     ];
 
     /**
@@ -39,15 +43,18 @@ class Booking extends Model
     }
 
     /**
-     * Calculate total amount based on package price and number of people
+     * Calculate total amount based on package price, number of people, and add-ons
      */
     public function calculateTotalAmount(): float
     {
+        $baseAmount = 0;
         if ($this->package && $this->number_of_people) {
-            return $this->package->price_usd * $this->number_of_people;
+            $baseAmount = $this->package->price_usd * $this->number_of_people;
         }
         
-        return 0;
+        $addonsAmount = $this->addons_total ?? 0;
+        
+        return $baseAmount + (float) $addonsAmount;
     }
 
     /**

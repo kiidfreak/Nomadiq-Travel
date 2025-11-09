@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PackageItineraryController;
 use App\Http\Controllers\Api\ProposalController;
+use App\Http\Controllers\Api\MicroExperienceController;
+use App\Http\Controllers\Api\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,3 +91,14 @@ Route::prefix('mpesa')->group(function () {
 Route::post('/custom-itinerary/submit', [PackageItineraryController::class, 'submitCustomItinerary']);
 
 Route::post('/proposals', [ProposalController::class, 'store']);
+
+Route::prefix('micro-experiences')->group(function () {
+    Route::get('/', [MicroExperienceController::class, 'index']);
+    Route::get('/category', [MicroExperienceController::class, 'byCategory']);
+    Route::get('/{id}', [MicroExperienceController::class, 'show']);
+});
+
+Route::prefix('settings')->group(function () {
+    Route::get('/', [SettingController::class, 'index']);
+    Route::get('/{key}', [SettingController::class, 'show']);
+});

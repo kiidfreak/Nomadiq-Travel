@@ -94,7 +94,19 @@ class PackageResource extends Resource
                         Forms\Components\FileUpload::make('image_url')
                             ->image()
                             ->label('Package Image')
-                            ->directory('packages'),
+                            ->directory('packages')
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('16:9')
+                            ->imageResizeTargetWidth('1200')
+                            ->imageResizeTargetHeight('675')
+                            ->maxSize(10240) // 10MB = 10,240 KB
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->helperText('⚠️ Max file size: 10MB (10,240 KB). Images will be automatically resized to 1200x675px (16:9 ratio). Compress large images using TinyPNG.com for faster uploads.')
+                            ->disk('public')
+                            ->visibility('public')
+                            ->deletable()
+                            ->downloadable()
+                            ->previewable(),
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
                             ->default(true),
