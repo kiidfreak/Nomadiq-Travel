@@ -277,27 +277,27 @@ export default function Packages() {
           ))}
         </div>
 
-        <div className="text-center mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/packages"
-            className="inline-block px-8 py-3 border-2 border-nomadiq-black text-nomadiq-black hover:bg-nomadiq-black hover:text-white transition-all duration-200 font-semibold uppercase tracking-wide"
-          >
-            View All Packages
-          </Link>
-          <br />
-          <p>Or</p>
-          <br />
-          <Link
-            href="/proposal"
-            className="group relative inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-nomadiq-copper via-nomadiq-orange to-nomadiq-teal text-white rounded-full font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 hover:from-nomadiq-teal hover:via-nomadiq-orange hover:to-nomadiq-copper transform hover:-translate-y-1"
-          >
-            <span className="font-semibold">Make Your Own</span>
-            <span className="flex items-center">
-              <span className="animate-typing-wave inline-block">~</span>
-              <span className="animate-typing-wave-delayed inline-block">~</span>
-              <span className="animate-typing-wave inline-block" style={{ animationDelay: '1s' }}>~</span>
-            </span>
-          </Link>
+        <div className="text-center mt-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/packages"
+              className="inline-block px-8 py-3 border-2 border-nomadiq-black text-nomadiq-black hover:bg-nomadiq-black hover:text-white transition-all duration-200 font-semibold uppercase tracking-wide"
+            >
+              View All Packages
+            </Link>
+            <span className="text-nomadiq-black/60 font-medium hidden sm:inline">or</span>
+            <Link
+              href="/proposal"
+              className="group relative inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-nomadiq-copper via-nomadiq-orange to-nomadiq-teal text-white rounded-full font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 hover:from-nomadiq-teal hover:via-nomadiq-orange hover:to-nomadiq-copper transform hover:-translate-y-1"
+            >
+              <span className="font-semibold">Make Your Own</span>
+              <span className="flex items-center">
+                <span className="animate-typing-wave inline-block">~</span>
+                <span className="animate-typing-wave-delayed inline-block">~</span>
+                <span className="animate-typing-wave inline-block" style={{ animationDelay: '1s' }}>~</span>
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

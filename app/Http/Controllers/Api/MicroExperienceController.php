@@ -18,21 +18,37 @@ class MicroExperienceController extends Controller
     {
         $packageId = $request->get('package_id');
         
-        $query = MicroExperience::where('is_active', true);
+        // Get all active experiences first (ordered)
+        $experiences = MicroExperience::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
         
         // Filter by package availability if package_id is provided
         if ($packageId) {
-            $query->where(function($q) use ($packageId) {
-                $q->whereNull('available_packages')
-                  ->orWhereJsonContains('available_packages', (int) $packageId);
-            });
+            $packageIdStr = (string) $packageId; // Convert to string since stored as strings in JSON array
+            
+            // Filter in memory to handle SQLite JSON limitations properly
+            $experiences = $experiences->filter(function($experience) use ($packageIdStr) {
+                $availablePackages = $experience->available_packages;
+                
+                // If available_packages is null or empty, show for all packages
+                if (empty($availablePackages) || $availablePackages === null) {
+                    return true;
+                }
+                
+                // If available_packages is an array, check if package_id is in it
+                if (is_array($availablePackages)) {
+                    // Check both string and integer representations
+                    return in_array($packageIdStr, $availablePackages) || 
+                           in_array((int) $packageIdStr, array_map('intval', $availablePackages));
+                }
+                
+                return false;
+            })->values(); // Reset keys after filtering
         }
         
-        $experiences = $query
-            ->orderBy('sort_order', 'asc')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function($experience) {
+        $experiences = $experiences->map(function($experience) {
                 // Ensure price_usd is a valid float and fix incorrectly stored prices
                 if ($experience->price_usd !== null && $experience->price_usd !== '') {
                     $price = (float) $experience->price_usd;
