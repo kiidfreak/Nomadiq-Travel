@@ -53,10 +53,11 @@ export default function PackageDetailPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch currency rate
+        // Fetch currency rate first
         const rate = await fetchCurrencyRate()
         setCurrencyRate(rate)
         setUsdToKshRate(rate)
+        console.log('💰 Currency rate loaded:', rate)
 
         // Fetch package
         const response = await packagesApi.getById(params.id as string)
@@ -68,7 +69,9 @@ export default function PackageDetailPage() {
           try {
             const experiencesResponse = await microExperiencesApi.getAll(pkg.id)
             if (experiencesResponse.data.success) {
-              setMicroExperiences(experiencesResponse.data.data || [])
+              const experiences = experiencesResponse.data.data || []
+              console.log('🛥️ Micro experiences loaded:', experiences.length, experiences)
+              setMicroExperiences(experiences)
             }
           } catch (expError) {
             console.error('Error fetching micro experiences:', expError)
@@ -76,7 +79,9 @@ export default function PackageDetailPage() {
             try {
               const allExperiencesResponse = await microExperiencesApi.getAll()
               if (allExperiencesResponse.data.success) {
-                setMicroExperiences(allExperiencesResponse.data.data || [])
+                const experiences = allExperiencesResponse.data.data || []
+                console.log('🛥️ All micro experiences loaded:', experiences.length)
+                setMicroExperiences(experiences)
               }
             } catch (allError) {
               console.error('Error fetching all micro experiences:', allError)
@@ -519,7 +524,22 @@ export default function PackageDetailPage() {
                     {microExperiences.length > 0 ? (
                       <div className="space-y-3 max-h-64 overflow-y-auto">
                         {microExperiences.map((experience) => {
-                          const pricePerPerson = typeof experience.price_usd === 'number' ? experience.price_usd : (parseFloat(experience.price_usd) || 0)
+                          // Ensure price is a valid number
+                          let pricePerPerson = 0
+                          if (experience.price_usd !== null && experience.price_usd !== undefined) {
+                            if (typeof experience.price_usd === 'number') {
+                              pricePerPerson = experience.price_usd
+                            } else if (typeof experience.price_usd === 'string') {
+                              pricePerPerson = parseFloat(experience.price_usd) || 0
+                            }
+                          }
+                          
+                          // Prices should already be fixed by the backend, but add safety check
+                          // Backend handles price normalization, but we ensure it's reasonable
+                          if (pricePerPerson > 10000) {
+                            console.warn('⚠️ Unusually high price detected:', pricePerPerson, 'for', experience.title)
+                          }
+                          
                           const isSelected = selectedAddons.includes(experience.id)
                           const totalForGroup = pricePerPerson * bookingData.number_of_people
                           
@@ -560,14 +580,12 @@ export default function PackageDetailPage() {
                                         {formatKsh(usdToKsh(pricePerPerson))}
                                         <span className="text-xs text-nomadiq-black/60 ml-1">per person</span>
                                       </div>
+                                      <div className="text-xs text-nomadiq-black/40 mt-0.5 group-hover/price:block hidden">
+                                        {formatUsd(pricePerPerson)} USD
+                                      </div>
                                       {isSelected && bookingData.number_of_people > 1 && (
                                         <div className="text-xs text-nomadiq-copper mt-0.5 whitespace-nowrap">
                                           ×{bookingData.number_of_people} = {formatKsh(usdToKsh(totalForGroup))}
-                                        </div>
-                                      )}
-                                      {isSelected && bookingData.number_of_people === 1 && (
-                                        <div className="text-xs text-nomadiq-black/50 mt-0.5 whitespace-nowrap">
-                                          {formatUsd(pricePerPerson)}
                                         </div>
                                       )}
                                     </div>

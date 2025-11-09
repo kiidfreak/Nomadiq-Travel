@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { microExperiencesApi } from '@/lib/api'
-import { ChevronLeft, ChevronRight, Clock, MapPin, DollarSign } from 'lucide-react'
+import { microExperiencesApi, settingsApi } from '@/lib/api'
+import { ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react'
+import { fetchCurrencyRate, usdToKsh, formatKsh, formatUsd, setUsdToKshRate } from '@/lib/currency'
 
 interface MicroExperience {
   id: number
@@ -20,22 +21,29 @@ export default function MicroExperiences() {
   const [experiences, setExperiences] = useState<MicroExperience[]>([])
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [currencyRate, setCurrencyRate] = useState(140)
 
   useEffect(() => {
-    const fetchExperiences = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch currency rate
+        const rate = await fetchCurrencyRate()
+        setCurrencyRate(rate)
+        setUsdToKshRate(rate)
+
+        // Fetch micro experiences
         const response = await microExperiencesApi.getAll()
         if (response.data.success) {
           setExperiences(response.data.data)
         }
       } catch (error) {
-        console.error('Error fetching micro experiences:', error)
+        console.error('Error fetching data:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchExperiences()
+    fetchData()
   }, [])
 
   useEffect(() => {
@@ -147,10 +155,14 @@ export default function MicroExperiences() {
                       <span>{currentExperience.duration_hours} hours</span>
                     </div>
                   )}
-                  {currentExperience.price_usd && (
-                    <div className="flex items-center space-x-2">
-                      <DollarSign className="w-5 h-5" />
-                      <span className="font-semibold">${currentExperience.price_usd}</span>
+                  {currentExperience.price_usd && currentExperience.price_usd > 0 && (
+                    <div className="flex items-center space-x-2 group/price">
+                      <span className="font-semibold text-nomadiq-copper text-lg">
+                        {formatKsh(usdToKsh(currentExperience.price_usd))}
+                      </span>
+                      <span className="text-sm text-nomadiq-black/50 hidden group-hover/price:inline">
+                        ({formatUsd(currentExperience.price_usd)})
+                      </span>
                     </div>
                   )}
                 </div>

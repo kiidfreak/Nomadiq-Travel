@@ -20,7 +20,17 @@ class TestimonialController extends Controller
         $testimonials = Testimonial::with('package')
             ->where('is_published', true)
             ->latest()
-            ->get();
+            ->get()
+            ->map(function($testimonial) {
+                return [
+                    'id' => $testimonial->id,
+                    'customer_name' => $testimonial->customer_name,
+                    'package_name' => $testimonial->package ? $testimonial->package->title : 'General Experience',
+                    'rating' => $testimonial->rating,
+                    'comment' => $testimonial->review_text, // Map review_text to comment for frontend
+                    'review_text' => $testimonial->review_text, // Also include original field
+                ];
+            });
         
         return response()->json([
             'success' => true,
@@ -78,8 +88,18 @@ class TestimonialController extends Controller
             ->where('is_published', true)
             ->where('rating', '>=', 4) // Only show 4-5 star ratings
             ->inRandomOrder()
-            ->take(3)
-            ->get();
+            ->take(6) // Get more to ensure we have enough
+            ->get()
+            ->map(function($testimonial) {
+                return [
+                    'id' => $testimonial->id,
+                    'customer_name' => $testimonial->customer_name,
+                    'package_name' => $testimonial->package ? $testimonial->package->title : 'General Experience',
+                    'rating' => $testimonial->rating,
+                    'comment' => $testimonial->review_text, // Map review_text to comment for frontend
+                    'review_text' => $testimonial->review_text, // Also include original field
+                ];
+            });
         
         return response()->json([
             'success' => true,

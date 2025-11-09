@@ -33,9 +33,18 @@ class MicroExperienceController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function($experience) {
-                // Ensure price_usd is a valid float
+                // Ensure price_usd is a valid float and fix incorrectly stored prices
                 if ($experience->price_usd !== null && $experience->price_usd !== '') {
-                    $experience->price_usd = (float) $experience->price_usd;
+                    $price = (float) $experience->price_usd;
+                    
+                    // Fix prices that are clearly too high (likely stored with extra zeros)
+                    if ($price > 1000 && $price % 100 === 0 && ($price / 100) < 1000) {
+                        $price = $price / 100;
+                    } elseif ($price > 1000 && $price % 10 === 0 && ($price / 10) < 1000) {
+                        $price = $price / 10;
+                    }
+                    
+                    $experience->price_usd = $price;
                 } else {
                     $experience->price_usd = null;
                 }
@@ -76,9 +85,18 @@ class MicroExperienceController extends Controller
         $experience = MicroExperience::where('is_active', true)
             ->findOrFail($id);
         
-        // Ensure price_usd is a valid float
+        // Ensure price_usd is a valid float and fix incorrectly stored prices
         if ($experience->price_usd !== null && $experience->price_usd !== '') {
-            $experience->price_usd = (float) $experience->price_usd;
+            $price = (float) $experience->price_usd;
+            
+            // Fix prices that are clearly too high
+            if ($price > 1000 && $price % 100 === 0 && ($price / 100) < 1000) {
+                $price = $price / 100;
+            } elseif ($price > 1000 && $price % 10 === 0 && ($price / 10) < 1000) {
+                $price = $price / 10;
+            }
+            
+            $experience->price_usd = $price;
         } else {
             $experience->price_usd = null;
         }

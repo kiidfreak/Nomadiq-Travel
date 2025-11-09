@@ -6,10 +6,11 @@ import { Star, Quote } from 'lucide-react'
 
 interface Testimonial {
   id: number
-  customer_name: string
-  package_name: string
+  customer_name?: string
+  package_name?: string
   rating: number
-  comment: string
+  comment?: string
+  review_text?: string
 }
 
 export default function Testimonials() {
@@ -44,6 +45,23 @@ export default function Testimonials() {
   }, [])
 
   if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-white to-nomadiq-bone">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-center mb-12 text-nomadiq-black">
+            Hear From Our Happy Travelers
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-nomadiq-sand/20 rounded-2xl h-64 animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (testimonials.length === 0) {
     return null
   }
 
@@ -76,12 +94,12 @@ export default function Testimonials() {
               </div>
 
               <p className="text-nomadiq-black/80 mb-6 italic leading-relaxed">
-                "{testimonial.comment}"
+                "{testimonial.comment || testimonial.review_text || 'Great experience!'}"
               </p>
 
               <div className="border-t border-nomadiq-sand/30 pt-4">
-                <p className="font-semibold text-nomadiq-black">{testimonial.customer_name}</p>
-                <p className="text-sm text-nomadiq-black/60">{testimonial.package_name}</p>
+                <p className="font-semibold text-nomadiq-black">{testimonial.customer_name || 'Anonymous'}</p>
+                <p className="text-sm text-nomadiq-black/60">{testimonial.package_name || 'General Experience'}</p>
               </div>
             </div>
           ))}
