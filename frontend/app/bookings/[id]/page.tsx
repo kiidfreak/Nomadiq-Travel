@@ -222,24 +222,37 @@ export default function BookingConfirmationPage() {
               <div className="pt-6 border-t border-nomadiq-sand/30">
                 <h3 className="font-semibold text-nomadiq-black mb-3">Selected Add-ons</h3>
                 <div className="space-y-2">
-                  {booking.selected_micro_experiences.map((addon, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-2">
-                      <span className="text-nomadiq-black/80">{addon.title}</span>
-                      {addon.price_usd && (
-                        <div className="text-right group/price">
-                          <span className="font-semibold text-nomadiq-copper">
-                            {formatKsh(usdToKsh(addon.price_usd))}
-                          </span>
-                          <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
-                            {formatUsd(addon.price_usd)}
-                          </div>
+                  {booking.selected_micro_experiences.map((addon, idx) => {
+                    const addonPricePerPerson = addon.price_usd || 0
+                    const addonTotal = addonPricePerPerson * booking.number_of_people
+                    return (
+                      <div key={idx} className="flex justify-between items-center py-2">
+                        <div>
+                          <span className="text-nomadiq-black/80">{addon.title}</span>
+                          {booking.number_of_people > 1 && (
+                            <span className="text-xs text-nomadiq-black/50 ml-2">
+                              ({booking.number_of_people} × {formatUsd(addonPricePerPerson)})
+                            </span>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        {addon.price_usd && (
+                          <div className="text-right group/price">
+                            <span className="font-semibold text-nomadiq-copper">
+                              {formatKsh(usdToKsh(addonTotal))}
+                            </span>
+                            <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
+                              {formatUsd(addonTotal)}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                   {booking.addons_total && parseFloat(String(booking.addons_total)) > 0 && (
                     <div className="pt-2 border-t border-nomadiq-sand/30 flex justify-between items-center font-semibold">
-                      <span className="text-nomadiq-black">Add-ons Total:</span>
+                      <span className="text-nomadiq-black">
+                        Add-ons Total ({booking.number_of_people} {booking.number_of_people === 1 ? 'person' : 'people'}):
+                      </span>
                       <div className="text-right group/price">
                         <span className="text-nomadiq-copper">
                           {formatKsh(usdToKsh(parseFloat(String(booking.addons_total))))}

@@ -65,9 +65,23 @@ export default function PackageDetailPage() {
           setPackageData(pkg)
           
           // Fetch micro experiences for this package
-          const experiencesResponse = await microExperiencesApi.getAll(pkg.id)
-          if (experiencesResponse.data.success) {
-            setMicroExperiences(experiencesResponse.data.data)
+          try {
+            const experiencesResponse = await microExperiencesApi.getAll(pkg.id)
+            if (experiencesResponse.data.success) {
+              setMicroExperiences(experiencesResponse.data.data || [])
+            }
+          } catch (expError) {
+            console.error('Error fetching micro experiences:', expError)
+            // Try fetching all experiences if package-specific fetch fails
+            try {
+              const allExperiencesResponse = await microExperiencesApi.getAll()
+              if (allExperiencesResponse.data.success) {
+                setMicroExperiences(allExperiencesResponse.data.data || [])
+              }
+            } catch (allError) {
+              console.error('Error fetching all micro experiences:', allError)
+              setMicroExperiences([])
+            }
           }
         }
       } catch (error) {
@@ -488,7 +502,7 @@ export default function PackageDetailPage() {
                       </div>
                     )}
                     {/* Price Display */}
-                    <div className="mb-2">
+                    <div className="mb-6">
                       <div className="text-4xl font-serif font-bold text-nomadiq-copper group/price relative">
                         {formatKsh(usdToKsh(packageData.price_usd))}
                         <span className="text-lg font-normal text-nomadiq-black/40 ml-2 hidden group-hover/price:inline-block">
@@ -496,106 +510,154 @@ export default function PackageDetailPage() {
                         </span>
                       </div>
                       <div className="text-sm text-nomadiq-black/60">per person</div>
-                      {/* Total with add-ons */}
-                      {selectedAddons.length > 0 && (
-                        <div className="mt-4 pt-4 border-t border-nomadiq-sand/30">
-                          <div className="text-sm text-nomadiq-black/70 mb-1">Package Total:</div>
-                          <div className="text-xl font-semibold text-nomadiq-copper">
-                            {formatKsh(usdToKsh(packageData.price_usd * bookingData.number_of_people))}
-                          </div>
-                          <div className="text-xs text-nomadiq-black/50">
-                            {formatUsd(packageData.price_usd * bookingData.number_of_people)}
-                          </div>
-                          <div className="text-sm text-nomadiq-black/70 mt-2 mb-1">Add-ons Total:</div>
-                          <div className="text-lg font-semibold text-nomadiq-copper">
-                            {formatKsh(usdToKsh(
-                              microExperiences
-                                .filter(e => selectedAddons.includes(e.id))
-                                .reduce((sum, e) => sum + (e.price_usd || 0), 0)
-                            ))}
-                          </div>
-                          <div className="text-xs text-nomadiq-black/50 mb-2">
-                            {formatUsd(
-                              microExperiences
-                                .filter(e => selectedAddons.includes(e.id))
-                                .reduce((sum, e) => sum + (e.price_usd || 0), 0)
-                            )}
-                          </div>
-                          <div className="text-sm font-semibold text-nomadiq-black/80 pt-2 border-t border-nomadiq-sand/30">
-                            Grand Total:
-                          </div>
-                          <div className="text-2xl font-bold text-nomadiq-copper">
-                            {formatKsh(usdToKsh(
-                              (packageData.price_usd * bookingData.number_of_people) +
-                              microExperiences
-                                .filter(e => selectedAddons.includes(e.id))
-                                .reduce((sum, e) => sum + (e.price_usd || 0), 0)
-                            ))}
-                          </div>
-                          <div className="text-xs text-nomadiq-black/50">
-                            {formatUsd(
-                              (packageData.price_usd * bookingData.number_of_people) +
-                              microExperiences
-                                .filter(e => selectedAddons.includes(e.id))
-                                .reduce((sum, e) => sum + (e.price_usd || 0), 0)
-                            )}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
 
-                  {/* Add-On Experiences */}
-                  {microExperiences.length > 0 && (
-                    <div className="border-t border-nomadiq-sand/30 pt-6 mb-6">
-                      <h3 className="text-lg font-semibold text-nomadiq-black mb-4">Add-On Experiences</h3>
+                  {/* Add-On Experiences - Moved before form */}
+                  <div className="border-t border-nomadiq-sand/30 pt-6 mb-6">
+                    <h3 className="text-lg font-semibold text-nomadiq-black mb-4">Add-On Experiences</h3>
+                    {microExperiences.length > 0 ? (
                       <div className="space-y-3 max-h-64 overflow-y-auto">
-                        {microExperiences.map((experience) => (
-                          <label
-                            key={experience.id}
-                            className="flex items-start space-x-3 p-3 border border-nomadiq-sand/30 rounded-lg cursor-pointer hover:bg-nomadiq-sand/10 transition-colors"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={selectedAddons.includes(experience.id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedAddons([...selectedAddons, experience.id])
-                                } else {
-                                  setSelectedAddons(selectedAddons.filter(id => id !== experience.id))
-                                }
-                              }}
-                              className="mt-1 w-4 h-4 text-nomadiq-copper border-nomadiq-sand/30 rounded focus:ring-nomadiq-copper"
-                            />
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                  {experience.emoji && (
-                                    <span className="text-xl">{experience.emoji}</span>
-                                  )}
-                                  <span className="font-medium text-nomadiq-black text-sm">
-                                    {experience.title}
-                                  </span>
-                                </div>
-                                {experience.price_usd && (
-                                  <div className="text-right group/price">
-                                    <div className="font-semibold text-nomadiq-copper text-sm">
-                                      {formatKsh(usdToKsh(experience.price_usd))}
-                                    </div>
-                                    <div className="text-xs text-nomadiq-black/50 hidden group-hover/price:block">
-                                      {formatUsd(experience.price_usd)}
-                                    </div>
+                        {microExperiences.map((experience) => {
+                          const pricePerPerson = typeof experience.price_usd === 'number' ? experience.price_usd : (parseFloat(experience.price_usd) || 0)
+                          const isSelected = selectedAddons.includes(experience.id)
+                          const totalForGroup = pricePerPerson * bookingData.number_of_people
+                          
+                          return (
+                            <label
+                              key={experience.id}
+                              className={`flex items-start space-x-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                                isSelected 
+                                  ? 'border-nomadiq-copper bg-nomadiq-copper/5 hover:bg-nomadiq-copper/10' 
+                                  : 'border-nomadiq-sand/30 hover:bg-nomadiq-sand/10'
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedAddons([...selectedAddons, experience.id])
+                                  } else {
+                                    setSelectedAddons(selectedAddons.filter(id => id !== experience.id))
+                                  }
+                                }}
+                                className="mt-1 w-4 h-4 text-nomadiq-copper border-nomadiq-sand/30 rounded focus:ring-nomadiq-copper"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2 mb-1">
+                                  <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                    {experience.emoji && (
+                                      <span className="text-xl flex-shrink-0">{experience.emoji}</span>
+                                    )}
+                                    <span className="font-medium text-nomadiq-black text-sm truncate">
+                                      {experience.title}
+                                    </span>
                                   </div>
+                                  {pricePerPerson > 0 && (
+                                    <div className="text-right flex-shrink-0">
+                                      <div className="font-semibold text-nomadiq-copper text-sm whitespace-nowrap">
+                                        {formatKsh(usdToKsh(pricePerPerson))}
+                                        <span className="text-xs text-nomadiq-black/60 ml-1">per person</span>
+                                      </div>
+                                      {isSelected && bookingData.number_of_people > 1 && (
+                                        <div className="text-xs text-nomadiq-copper mt-0.5 whitespace-nowrap">
+                                          ×{bookingData.number_of_people} = {formatKsh(usdToKsh(totalForGroup))}
+                                        </div>
+                                      )}
+                                      {isSelected && bookingData.number_of_people === 1 && (
+                                        <div className="text-xs text-nomadiq-black/50 mt-0.5 whitespace-nowrap">
+                                          {formatUsd(pricePerPerson)}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                  {pricePerPerson === 0 && (
+                                    <div className="text-xs text-nomadiq-black/60 font-medium flex-shrink-0">Free</div>
+                                  )}
+                                </div>
+                                {experience.description && (
+                                  <p className="text-xs text-nomadiq-black/60 mt-1 line-clamp-2">
+                                    {experience.description}
+                                  </p>
+                                )}
+                                <div className="flex items-center gap-3 mt-1 text-xs text-nomadiq-black/50">
+                                  {experience.duration_hours && (
+                                    <span>⏱️ {experience.duration_hours} {experience.duration_hours === 1 ? 'hour' : 'hours'}</span>
+                                  )}
+                                  {experience.location && (
+                                    <span className="truncate">📍 {experience.location}</span>
+                                  )}
+                                </div>
+                              </div>
+                            </label>
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-nomadiq-black/60 py-4 text-center border border-nomadiq-sand/20 rounded-lg bg-nomadiq-sand/5">
+                        No add-on experiences available for this package at the moment.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Total with add-ons */}
+                  {(selectedAddons.length > 0 || bookingData.number_of_people > 1) && (
+                    <div className="mb-6 pt-4 border-t border-nomadiq-sand/30">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-nomadiq-black/70">Package ({bookingData.number_of_people} {bookingData.number_of_people === 1 ? 'person' : 'people'}):</span>
+                          <div className="text-right">
+                            <div className="font-semibold text-nomadiq-copper">
+                              {formatKsh(usdToKsh(packageData.price_usd * bookingData.number_of_people))}
+                            </div>
+                            <div className="text-xs text-nomadiq-black/50">
+                              {formatUsd(packageData.price_usd * bookingData.number_of_people)}
+                            </div>
+                          </div>
+                        </div>
+                        {selectedAddons.length > 0 && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-nomadiq-black/70">Add-ons Total:</span>
+                            <div className="text-right">
+                              <div className="font-semibold text-nomadiq-copper">
+                                {formatKsh(usdToKsh(
+                                  microExperiences
+                                    .filter(e => selectedAddons.includes(e.id))
+                                    .reduce((sum, e) => sum + (typeof e.price_usd === 'number' ? e.price_usd : (parseFloat(e.price_usd) || 0)), 0) * bookingData.number_of_people
+                                ))}
+                              </div>
+                              <div className="text-xs text-nomadiq-black/50">
+                                {formatUsd(
+                                  microExperiences
+                                    .filter(e => selectedAddons.includes(e.id))
+                                    .reduce((sum, e) => sum + (typeof e.price_usd === 'number' ? e.price_usd : (parseFloat(e.price_usd) || 0)), 0) * bookingData.number_of_people
                                 )}
                               </div>
-                              {experience.description && (
-                                <p className="text-xs text-nomadiq-black/60 mt-1 line-clamp-2">
-                                  {experience.description}
-                                </p>
+                            </div>
+                          </div>
+                        )}
+                        <div className="pt-2 border-t border-nomadiq-sand/30 flex justify-between items-center">
+                          <span className="text-sm font-semibold text-nomadiq-black">Grand Total:</span>
+                          <div className="text-right">
+                            <div className="text-xl font-bold text-nomadiq-copper">
+                              {formatKsh(usdToKsh(
+                                (packageData.price_usd * bookingData.number_of_people) +
+                                (selectedAddons.length > 0 ? microExperiences
+                                  .filter(e => selectedAddons.includes(e.id))
+                                  .reduce((sum, e) => sum + (typeof e.price_usd === 'number' ? e.price_usd : (parseFloat(e.price_usd) || 0)), 0) * bookingData.number_of_people : 0)
+                              ))}
+                            </div>
+                            <div className="text-xs text-nomadiq-black/50">
+                              {formatUsd(
+                                (packageData.price_usd * bookingData.number_of_people) +
+                                (selectedAddons.length > 0 ? microExperiences
+                                  .filter(e => selectedAddons.includes(e.id))
+                                  .reduce((sum, e) => sum + (typeof e.price_usd === 'number' ? e.price_usd : (parseFloat(e.price_usd) || 0)), 0) * bookingData.number_of_people : 0)
                               )}
                             </div>
-                          </label>
-                        ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}

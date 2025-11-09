@@ -27,6 +27,9 @@ export async function fetchCurrencyRate(): Promise<number> {
  * Convert USD to Kenyan Shillings
  */
 export function usdToKsh(usd: number): number {
+  if (isNaN(usd) || !isFinite(usd)) {
+    return 0
+  }
   return usd * usdToKshRate
 }
 
@@ -34,6 +37,9 @@ export function usdToKsh(usd: number): number {
  * Format currency in KSh
  */
 export function formatKsh(amount: number): string {
+  if (isNaN(amount) || !isFinite(amount)) {
+    return 'KSh 0'
+  }
   return new Intl.NumberFormat('en-KE', {
     style: 'currency',
     currency: 'KES',

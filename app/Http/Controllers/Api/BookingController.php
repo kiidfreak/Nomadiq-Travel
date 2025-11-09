@@ -66,7 +66,7 @@ class BookingController extends Controller
                     }
                 }
                 
-                // Calculate add-ons total
+                // Calculate add-ons total (multiplied by number of people)
                 $addonsTotal = 0;
                 $selectedMicroExperiences = [];
                 if (!empty($validatedData['selected_micro_experiences'])) {
@@ -76,7 +76,8 @@ class BookingController extends Controller
                     
                     foreach ($microExperiences as $experience) {
                         if ($experience->price_usd) {
-                            $addonsTotal += $experience->price_usd;
+                            // Multiply add-on price by number of people
+                            $addonsTotal += $experience->price_usd * $validatedData['number_of_people'];
                         }
                         $selectedMicroExperiences[] = [
                             'id' => $experience->id,
