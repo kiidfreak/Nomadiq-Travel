@@ -12,11 +12,34 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-nomadiq-sand/30 via-nomadiq-bone to-nomadiq-sky/20">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-nomadiq-copper/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-nomadiq-teal/10 rounded-full blur-3xl"></div>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image - Centered behind text */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <img
+          src="/images/colorshero.png"
+          alt="Nomadiq Coastal Adventure"
+          className="w-full h-full object-cover"
+          style={{
+            objectPosition: 'center 5%',
+          }}
+          onError={(e) => {
+            // Fallback to gradient if image doesn't exist
+            e.currentTarget.style.display = 'none'
+          }}
+        />
+        {/* Gradient Overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-nomadiq-bone/60 via-nomadiq-bone/40 to-nomadiq-sky/30"></div>
+        {/* Additional subtle overlay for better contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-nomadiq-sand/20"></div>
+      </div>
+
+      {/* Background decorative elements - subtle brushstroke effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-nomadiq-sky/20 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-nomadiq-copper/15 rounded-full blur-3xl opacity-50"></div>
+        {/* Abstract brushstroke-like shapes */}
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[400px] bg-nomadiq-teal/10 rounded-[60%] blur-2xl rotate-12 opacity-40"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[600px] bg-nomadiq-orange/10 rounded-[50%] blur-2xl -rotate-12 opacity-40"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
@@ -27,7 +50,7 @@ export default function Hero() {
         </h1>
         
         <p className="text-lg md:text-xl lg:text-2xl text-nomadiq-black/80 max-w-3xl mx-auto mb-10 leading-relaxed">
-          Experience unforgettable coastal adventures with expert guides through Kenya's most spectacular beaches, mangroves, and hidden gems.
+          Experience unforgettable *coastal adventures* with expert guides through Kenya's most spectacular beaches, mangroves, and hidden gems.
         </p>
 
         <Link

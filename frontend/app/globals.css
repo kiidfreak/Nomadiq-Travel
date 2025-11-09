@@ -95,3 +95,27 @@ html {
   animation: wave-delayed 3s ease-in-out infinite 0.8s;
 }
 
+/* Typing wave animation for buttons */
+@keyframes typing-wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-8px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-typing-wave {
+  animation: typing-wave 2s ease-in-out infinite;
+}
+
+.animate-typing-wave-delayed {
+  animation: typing-wave 2s ease-in-out infinite 0.5s;
+}
+

@@ -105,7 +105,7 @@ export default function PackagesPage() {
       }
     }
 
-    fetchPackages()
+    fetchData()
   }, [])
 
   useEffect(() => {
@@ -356,6 +356,29 @@ export default function PackagesPage() {
                 ))}
               </div>
             )}
+            
+            {/* Make Your Own Package CTA */}
+            <div className="mt-12 text-center">
+              <div className="bg-gradient-to-r from-nomadiq-copper/10 via-nomadiq-orange/10 to-nomadiq-teal/10 rounded-2xl p-8 border border-nomadiq-sand/30">
+                <h3 className="text-2xl md:text-3xl font-serif font-bold text-nomadiq-black mb-3">
+                  Can't find what you're looking for?
+                </h3>
+                <p className="text-nomadiq-black/70 mb-6 max-w-2xl mx-auto">
+                  Create your own custom package tailored to your preferences, budget, and interests. Our team will work with you to design the perfect adventure.
+                </p>
+                <Link
+                  href="/proposal"
+                  className="group relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-nomadiq-copper via-nomadiq-orange to-nomadiq-teal text-white rounded-full font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-300 hover:from-nomadiq-teal hover:via-nomadiq-orange hover:to-nomadiq-copper transform hover:-translate-y-1"
+                >
+                  <span className="font-semibold">Make Your Own Package</span>
+                  <span className="flex items-center">
+                    <span className="animate-typing-wave inline-block">~</span>
+                    <span className="animate-typing-wave-delayed inline-block">~</span>
+                    <span className="animate-typing-wave inline-block" style={{ animationDelay: '1s' }}>~</span>
+                  </span>
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
       </main>

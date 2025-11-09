@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { microExperiencesApi, settingsApi } from '@/lib/api'
-import { ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, MapPin, Plus } from 'lucide-react'
 import { fetchCurrencyRate, usdToKsh, formatKsh, formatUsd, setUsdToKshRate } from '@/lib/currency'
 
 interface MicroExperience {
@@ -95,13 +96,26 @@ export default function MicroExperiences() {
   return (
     <section className="py-20 bg-gradient-to-b from-white to-nomadiq-bone">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-nomadiq-black">
+        <Link
+            href="/experiences"
+            className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-nomadiq-copper via-nomadiq-orange to-nomadiq-teal text-white rounded-full font-bold text-lg hover:shadow-2xl hover:scale-110 transition-all duration-300 hover:from-nomadiq-teal hover:via-nomadiq-orange hover:to-nomadiq-copper transform hover:-translate-y-1"
+          >
+            <Plus className="w-7 h-7 group-hover:rotate-90 transition-transform duration-300" />
+          </Link>
+          <br />
+          <br />
+          <br />
+          <br />
+          
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-nomadiq-black mb-4">
             Add-On Experiences
           </h2>
-          <p className="text-nomadiq-black/70 text-lg">
+          <p className="text-nomadiq-black/70 text-lg mb-6">
             Enhance your journey with these special experiences
           </p>
+
         </div>
 
         {/* Slideshow */}

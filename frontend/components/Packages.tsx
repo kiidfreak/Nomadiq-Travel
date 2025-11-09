@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { packagesApi, settingsApi } from '@/lib/api'
 import { MapPin, Star, Calendar } from 'lucide-react'
 import { fetchCurrencyRate, usdToKsh, formatKsh, formatUsd, setUsdToKshRate } from '@/lib/currency'
+import { gsap } from 'gsap'
 
 interface Package {
   id: number
@@ -24,6 +25,32 @@ export default function Packages() {
   const [packages, setPackages] = useState<Package[]>([])
   const [loading, setLoading] = useState(true)
   const [currencyRate, setCurrencyRate] = useState(140)
+  const typewriterRef = useRef<HTMLSpanElement>(null)
+  const cursorRef = useRef<HTMLSpanElement>(null)
+  
+  // Get current quarter and year dynamically
+  const getCurrentQuarter = () => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = now.getMonth() + 1 // 0-indexed, so add 1
+    
+    // Determine current quarter
+    let quarter: string
+    if (month >= 1 && month <= 3) {
+      quarter = 'first quarter'
+    } else if (month >= 4 && month <= 6) {
+      quarter = 'second quarter'
+    } else if (month >= 7 && month <= 9) {
+      quarter = 'third quarter'
+    } else {
+      quarter = 'last quarter'
+    }
+    
+    return { quarter, year }
+  }
+  
+  const { quarter, year } = getCurrentQuarter()
+  const quarterText = `this ${quarter} of ${year}`
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,15 +97,64 @@ export default function Packages() {
 
     fetchData()
   }, [])
+  
+  // GSAP Typewriter effect
+  useEffect(() => {
+    if (typewriterRef.current && cursorRef.current && !loading) {
+      const element = typewriterRef.current
+      const cursor = cursorRef.current
+      const text = quarterText
+      
+      // Clear the element and hide cursor initially
+      element.textContent = ''
+      gsap.set(cursor, { opacity: 0 })
+      
+      // Create timeline with typewriter effect
+      const chars = text.split('')
+      const tl = gsap.timeline({ repeat: 0, delay: 0.5 })
+      
+      chars.forEach((char) => {
+        tl.to({}, {
+          duration: 0.08,
+          onComplete: () => {
+            if (element) {
+              element.textContent += char
+            }
+          }
+        })
+      })
+      
+      // Show cursor after typing is complete
+      tl.to(cursor, {
+        opacity: 1,
+        duration: 0.3,
+        onComplete: () => {
+          // Optional: Remove cursor after a delay or keep it blinking
+        }
+      })
+      
+      // Cleanup function
+      return () => {
+        tl.kill()
+      }
+    }
+  }, [loading, quarterText])
 
   if (loading) {
     return (
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-nomadiq-black">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-2 text-nomadiq-black">
               Choose Your Adventure
             </h2>
+            <div className="mb-4 min-h-[28px]">
+              <p className="text-nomadiq-black/70 text-lg">
+                <span className="text-nomadiq-copper font-semibold italic">
+                  {quarterText}
+                </span>
+              </p>
+            </div>
             <p className="text-nomadiq-black/70 text-lg">
               Tailor your experience by budget, region, and interests.
             </p>
@@ -97,9 +173,21 @@ export default function Packages() {
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-nomadiq-black">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-2 text-nomadiq-black">
             Choose Your Adventure
           </h2>
+          <div className="mb-4 min-h-[28px]">
+            <p className="text-nomadiq-black/70 text-lg">
+              <span
+                ref={typewriterRef}
+                className="text-nomadiq-copper font-semibold italic"
+              ></span>
+              <span 
+                ref={cursorRef}
+                className="inline-block w-0.5 h-5 bg-nomadiq-copper ml-1 animate-pulse"
+              ></span>
+            </p>
+          </div>
           <p className="text-nomadiq-black/70 text-lg">
             Tailor your experience by budget, region, and interests.
           </p>
@@ -189,12 +277,26 @@ export default function Packages() {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/packages"
             className="inline-block px-8 py-3 border-2 border-nomadiq-black text-nomadiq-black hover:bg-nomadiq-black hover:text-white transition-all duration-200 font-semibold uppercase tracking-wide"
           >
-            View All Experiences
+            View All Packages
+          </Link>
+          <br />
+          <p>Or</p>
+          <br />
+          <Link
+            href="/proposal"
+            className="group relative inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-nomadiq-copper via-nomadiq-orange to-nomadiq-teal text-white rounded-full font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 hover:from-nomadiq-teal hover:via-nomadiq-orange hover:to-nomadiq-copper transform hover:-translate-y-1"
+          >
+            <span className="font-semibold">Make Your Own</span>
+            <span className="flex items-center">
+              <span className="animate-typing-wave inline-block">~</span>
+              <span className="animate-typing-wave-delayed inline-block">~</span>
+              <span className="animate-typing-wave inline-block" style={{ animationDelay: '1s' }}>~</span>
+            </span>
           </Link>
         </div>
       </div>
