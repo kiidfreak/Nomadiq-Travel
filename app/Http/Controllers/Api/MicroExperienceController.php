@@ -33,6 +33,13 @@ class MicroExperienceController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function($experience) {
+                // Ensure price_usd is a valid float
+                if ($experience->price_usd !== null && $experience->price_usd !== '') {
+                    $experience->price_usd = (float) $experience->price_usd;
+                } else {
+                    $experience->price_usd = null;
+                }
+                
                 // Ensure image_url is a full URL
                 if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
                     $appUrl = config('app.url', 'https://nevcompany2.test');
@@ -68,6 +75,13 @@ class MicroExperienceController extends Controller
     {
         $experience = MicroExperience::where('is_active', true)
             ->findOrFail($id);
+        
+        // Ensure price_usd is a valid float
+        if ($experience->price_usd !== null && $experience->price_usd !== '') {
+            $experience->price_usd = (float) $experience->price_usd;
+        } else {
+            $experience->price_usd = null;
+        }
         
         // Ensure image_url is a full URL
         if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
@@ -111,6 +125,13 @@ class MicroExperienceController extends Controller
         
         $experiences = $query->get()
             ->map(function($experience) {
+                // Ensure price_usd is a valid float
+                if ($experience->price_usd !== null && $experience->price_usd !== '') {
+                    $experience->price_usd = (float) $experience->price_usd;
+                } else {
+                    $experience->price_usd = null;
+                }
+                
                 // Ensure image_url is a full URL
                 if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
                     $appUrl = config('app.url', 'https://nevcompany2.test');
