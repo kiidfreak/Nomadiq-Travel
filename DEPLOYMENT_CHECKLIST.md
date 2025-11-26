@@ -1,280 +1,102 @@
-# 🚀 Nomadiq Deployment Checklist
+# 🚀 Nomadiq Azure Deployment Checklist
 
 ## Pre-Deployment Preparation
 
 ### Code & Repository
 - [ ] All code committed to GitHub
-- [ ] All migrations run locally and working
+- [ ] `Dockerfile` for Backend created and tested
+- [ ] `Dockerfile` for Frontend created and tested
+- [ ] `docker-compose.yml` working locally
 - [ ] `.env.example` updated with all required variables
-- [ ] `railway.json` created
-- [ ] `.railwayignore` created
-- [ ] `README.md` updated with deployment info
 
-### Environment Variables Preparation
-- [ ] `APP_KEY` generated (`php artisan key:generate --show`)
-- [ ] SendGrid API key ready
-- [ ] M-Pesa credentials ready (if using payments)
-- [ ] Database credentials ready (Railway will provide)
-
-### Testing
-- [ ] All features tested locally
-- [ ] API endpoints working
-- [ ] Frontend connecting to backend
-- [ ] Images loading correctly
-- [ ] Payments working (if applicable)
-- [ ] Email sending working
+### Azure Prerequisites
+- [ ] Azure Account created and active
+- [ ] Azure CLI installed (optional but recommended)
+- [ ] Azure Subscription identified
 
 ---
 
-## Phase 1: Railway Backend Deployment
+## Phase 1: Azure Resources Setup
 
-### Account & Project Setup
-- [ ] Railway account created (https://railway.app)
-- [ ] GitHub account connected to Railway
-- [ ] New project created in Railway
-- [ ] Repository connected (`Nomadiq-Travel`)
+### Resource Group
+- [ ] Create Resource Group (e.g., `rg-nomadiq-prod`)
 
-### Database Setup
-- [ ] MySQL database added to Railway project
-- [ ] Database connection details copied
-- [ ] Database service running
+### Database (Azure Database for MySQL)
+- [ ] Create Azure Database for MySQL - Flexible Server
+- [ ] Configure firewall to allow Azure services
+- [ ] Create database `nomadiq`
+- [ ] Note down: Host, Username, Password
 
-### Environment Variables
+### Container Registry (Azure Container Registry - ACR)
+- [ ] Create Azure Container Registry (e.g., `acrnomadiq`)
+- [ ] Enable Admin User (for simple authentication)
+- [ ] Note down: Login Server, Username, Password
+
+### App Service Plan
+- [ ] Create App Service Plan (Linux, B1 or higher recommended for prod)
+
+---
+
+## Phase 2: Backend Deployment (Azure App Service)
+
+### Build & Push Image
+- [ ] Login to ACR: `az acr login --name <registry_name>`
+- [ ] Build Backend: `docker build -t <registry_name>.azurecr.io/nomadiq-backend:latest .`
+- [ ] Push Backend: `docker push <registry_name>.azurecr.io/nomadiq-backend:latest`
+
+### App Service Creation
+- [ ] Create Web App for Containers (Backend)
+- [ ] Select Image source: Azure Container Registry
+- [ ] Select `nomadiq-backend:latest`
+
+### Configuration (Environment Variables)
 - [ ] `APP_NAME=Nomadiq`
 - [ ] `APP_ENV=production`
 - [ ] `APP_KEY=` (generated key)
 - [ ] `APP_DEBUG=false`
-- [ ] `APP_URL=` (Railway URL initially)
-- [ ] Database variables (Railway auto-injects, verify)
-- [ ] Mail variables (SendGrid)
-- [ ] M-Pesa variables (if using)
-- [ ] Session/Cache drivers set
+- [ ] `APP_URL=` (https://<your-backend-app>.azurewebsites.net)
+- [ ] `DB_CONNECTION=mysql`
+- [ ] `DB_HOST=` (MySQL Flexible Server Host)
+- [ ] `DB_PORT=3306`
+- [ ] `DB_DATABASE=nomadiq`
+- [ ] `DB_USERNAME=`
+- [ ] `DB_PASSWORD=`
+- [ ] `FILESYSTEM_DISK=public` (or s3/azure if configured)
 
-### Service Configuration
-- [ ] Start command set: `php artisan serve --host=0.0.0.0 --port=$PORT`
-- [ ] Healthcheck path: `/up`
-- [ ] Build command configured (or using railway.json)
+### Post-Deployment
+- [ ] SSH into container (via Azure Portal) or use Startup Command
+- [ ] Run Migrations: `php artisan migrate --force`
+- [ ] Run Seeders: `php artisan db:seed --force`
+- [ ] Link Storage: `php artisan storage:link`
 
-### Deployment
-- [ ] First deployment successful
-- [ ] Build logs checked (no errors)
-- [ ] Service is running
-- [ ] Railway URL accessible
+---
 
-### Database Setup
-- [ ] Migrations run: `php artisan migrate --force`
-- [ ] Seeders run (if needed): `php artisan db:seed`
-- [ ] Storage link created: `php artisan storage:link`
-- [ ] Admin user created (if needed)
+## Phase 3: Frontend Deployment (Azure App Service)
 
-### Storage Configuration
-- [ ] Storage directory writable
-- [ ] Storage link working
-- [ ] Test image upload working
-- [ ] (Optional) S3 configured for production
+### Build & Push Image
+- [ ] Build Frontend: `docker build -t <registry_name>.azurecr.io/nomadiq-frontend:latest ./frontend`
+- [ ] Push Frontend: `docker push <registry_name>.azurecr.io/nomadiq-frontend:latest`
+
+### App Service Creation
+- [ ] Create Web App for Containers (Frontend)
+- [ ] Select Image source: Azure Container Registry
+- [ ] Select `nomadiq-frontend:latest`
+
+### Configuration
+- [ ] `NEXT_PUBLIC_API_URL=` (https://<your-backend-app>.azurewebsites.net/api)
+- [ ] `PORT=3000`
+- [ ] Startup Command: `node server.js` (if needed, usually auto-detected from Dockerfile)
+
+---
+
+## Phase 4: Verification & Domain
 
 ### Verification
-- [ ] API accessible at Railway URL
-- [ ] Health check endpoint working (`/up`)
-- [ ] Admin panel accessible (`/admin`)
-- [ ] API endpoints responding
-- [ ] CORS headers present
+- [ ] Backend Health Check (`/up` or `/api/health`)
+- [ ] Frontend loads
+- [ ] Frontend connects to Backend (Try logging in or viewing data)
 
----
-
-## Phase 2: Vercel Frontend Deployment
-
-### Account & Project Setup
-- [ ] Vercel account created (https://vercel.com)
-- [ ] GitHub account connected to Vercel
-- [ ] New project created in Vercel
-- [ ] Repository imported (`Nomadiq-Travel`)
-- [ ] Root directory set to `frontend`
-
-### Build Configuration
-- [ ] Framework preset: Next.js
-- [ ] **Root directory: `frontend`** ⚠️ **CRITICAL - Must be set!**
-- [ ] Build command: `npm run build` (default, runs from frontend/)
-- [ ] Output directory: `.next` (default)
-- [ ] Install command: `npm install` (default, runs from frontend/)
-- [ ] **Verify**: `vercel.json` exists in root (already created)
-
-### Environment Variables
-- [ ] `NEXT_PUBLIC_API_URL=` (Railway backend URL + `/api`)
-- [ ] Variables added for Production, Preview, Development
-
-### Deployment
-- [ ] First deployment successful
-- [ ] Build logs checked (no errors)
-- [ ] Vercel URL accessible
-- [ ] Frontend loading correctly
-
-### Verification
-- [ ] Frontend accessible at Vercel URL
-- [ ] API connection working
-- [ ] Images loading from backend
-- [ ] All pages working
-- [ ] No console errors
-
----
-
-## Phase 3: Domain Configuration
-
-### Backend Domain (api.nomadiq.com)
-- [ ] Domain purchased (if not owned)
-- [ ] Custom domain added in Railway
-- [ ] DNS CNAME record added:
-  - Host: `api`
-  - Value: Railway URL
-  - TTL: Automatic
-- [ ] SSL certificate active (Railway auto-provisions)
-- [ ] `APP_URL` updated to `https://api.nomadiq.com`
-- [ ] Backend accessible at custom domain
-
-### Frontend Domain (nomadiq.com)
-- [ ] Domain added in Vercel
-- [ ] DNS records added:
-  - A record: `@` → Vercel IP
-  - CNAME: `www` → Vercel CNAME
-- [ ] SSL certificate active (Vercel auto-provisions)
-- [ ] `NEXT_PUBLIC_API_URL` updated to use custom domain
-- [ ] Frontend accessible at custom domain
-
-### Environment Variable Updates
-- [ ] Railway: `APP_URL=https://api.nomadiq.com`
-- [ ] Vercel: `NEXT_PUBLIC_API_URL=https://api.nomadiq.com/api`
-- [ ] Redeploy both services
-- [ ] Test with custom domains
-
----
-
-## Phase 4: Post-Deployment Configuration
-
-### CORS Configuration
-- [ ] `config/cors.php` updated with production domains
-- [ ] Frontend domain added to allowed origins
-- [ ] CORS working correctly
-
-### Storage Configuration
-- [ ] Storage URLs using correct domain
-- [ ] Images accessible from frontend
-- [ ] File uploads working
-
-### Email Configuration
-- [ ] SendGrid API key added
-- [ ] Test email sent successfully
-- [ ] Booking confirmations working
-- [ ] Payment confirmations working
-
-### Payment Configuration (if applicable)
-- [ ] M-Pesa credentials added
-- [ ] Webhook URL configured
-- [ ] Test payment successful
-- [ ] Payment confirmations working
-
-### Scheduled Tasks
-- [ ] Cron job configured (Railway or external)
-- [ ] Schedule command: `php artisan schedule:run`
-- [ ] Email reminders working
-- [ ] Post-trip follow-ups working
-
-### Monitoring & Logs
-- [ ] Railway logs accessible
-- [ ] Vercel logs accessible
-- [ ] Error tracking set up (optional)
-- [ ] Performance monitoring set up (optional)
-
-### Backups
-- [ ] Database backup strategy in place
-- [ ] Storage backup strategy (if using local storage)
-- [ ] Backup schedule configured
-
----
-
-## Phase 5: Testing & Verification
-
-### Functional Testing
-- [ ] Homepage loads correctly
-- [ ] Packages page loads
-- [ ] Package detail page works
-- [ ] Booking flow works
-- [ ] Payment flow works
-- [ ] Email confirmations sent
-- [ ] Admin panel accessible
-- [ ] Admin can create/edit packages
-- [ ] Admin can create/edit memories
-- [ ] Images upload and display correctly
-- [ ] Videos upload and display correctly (if using)
-
-### Performance Testing
-- [ ] Page load times acceptable
-- [ ] Images optimized
-- [ ] API response times acceptable
-- [ ] Database queries optimized
-
-### Security Testing
-- [ ] HTTPS enabled on all domains
-- [ ] Environment variables secure
-- [ ] API endpoints protected
-- [ ] Admin panel protected
-- [ ] CORS configured correctly
-- [ ] No sensitive data exposed
-
----
-
-## Phase 6: Go Live 🎉
-
-### Final Checks
-- [ ] All features working
-- [ ] All tests passing
-- [ ] Performance acceptable
-- [ ] Security verified
-- [ ] Backup strategy in place
-- [ ] Monitoring set up
-
-### Launch
-- [ ] Announce to team
-- [ ] Monitor for issues
-- [ ] Ready to accept bookings!
-
----
-
-## Troubleshooting Quick Reference
-
-### Railway Issues
-- **Build fails**: Check build logs, verify composer.json
-- **Database errors**: Verify env variables, check connection
-- **Storage issues**: Run `php artisan storage:link`, check permissions
-- **502 errors**: Check start command, verify service is running
-
-### Vercel Issues
-- **Build fails**: Check build logs, verify package.json
-- **API errors**: Verify NEXT_PUBLIC_API_URL, check CORS
-- **Image errors**: Update next.config.js domains
-- **404 errors**: Check routing, verify file structure
-
-### Domain Issues
-- **SSL errors**: Wait for certificate provisioning (can take a few minutes)
-- **DNS errors**: Verify DNS records, wait for propagation
-- **CORS errors**: Update allowed origins in config/cors.php
-
----
-
-## Support Resources
-
-- **Railway Docs**: https://docs.railway.app
-- **Vercel Docs**: https://vercel.com/docs
-- **Laravel Docs**: https://laravel.com/docs
-- **Next.js Docs**: https://nextjs.org/docs
-
----
-
-## Notes
-
-- Keep this checklist updated as you deploy
-- Check off items as you complete them
-- Document any issues and solutions
-- Update team on deployment progress
-
-**Good luck with your deployment! 🚀**
-
+### Domain (Optional)
+- [ ] Map Custom Domain to Frontend App Service
+- [ ] Map Custom Domain to Backend App Service
+- [ ] Update `APP_URL` and `NEXT_PUBLIC_API_URL`

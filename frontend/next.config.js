@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   reactStrictMode: true,
   images: {
     domains: [
@@ -10,6 +11,7 @@ const nextConfig = {
       'nevcompany2.test',
       '*.railway.app', // Railway backend URLs
       '*.vercel.app', // Vercel preview URLs
+      '*.azurewebsites.net', // Azure App Service URLs
     ],
     remotePatterns: [
       {
@@ -35,6 +37,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'nevcompany2.test',
+        pathname: '/storage/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.azurewebsites.net',
         pathname: '/storage/**',
       },
     ],
