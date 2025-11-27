@@ -71,6 +71,18 @@ mkdir -p /var/www/storage/framework/views
 chown -R www-data:www-data /var/www/storage
 chmod -R 775 /var/www/storage
 
+# Configure Nginx to use Railway's PORT if set, default to 80
+NGINX_PORT=${PORT:-80}
+echo "🌐 Configuring Nginx to listen on port: $NGINX_PORT"
+
+# Update Nginx config with the correct port
+sed -i "s/listen 0.0.0.0:80;/listen 0.0.0.0:$NGINX_PORT;/g" /etc/nginx/sites-available/default
+sed -i "s/listen \[::\]:80;/listen [::]:$NGINX_PORT;/g" /etc/nginx/sites-available/default
+
+# Show Nginx config for debugging
+echo "📝 Nginx config:"
+cat /etc/nginx/sites-available/default
+
 # Start Supervisor (this should NOT fail)
 echo "🌐 Starting web server..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
