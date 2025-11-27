@@ -8,6 +8,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Health check endpoint for Railway
+Route::get('/up', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toISOString()
+    ]);
+});
+
 // Serve storage files with CORS headers
 Route::get('/storage/{path}', function ($path) {
     $filePath = storage_path('app/public/' . $path);
