@@ -52,6 +52,11 @@ php artisan migrate --force 2>&1 || {
     echo "⚠️  Migration failed, but continuing to start the server..."
 }
 
+echo "🌱 Seeding database..."
+php artisan db:seed --force 2>&1 || {
+    echo "⚠️  Seeding failed, but continuing..."
+}
+
 # Clear and optimize (don't fail on errors)
 echo "⚡ Optimizing application..."
 php artisan config:clear 2>&1 || true

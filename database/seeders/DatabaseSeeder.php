@@ -19,6 +19,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if data is already seeded
+        if (User::where('email', 'admin@nomadiq.com')->exists()) {
+            $this->command->info('Database already seeded. Skipping...');
+            return;
+        }
+
         // Create Admin User
         $admin = User::create([
             'name' => 'Admin User',
