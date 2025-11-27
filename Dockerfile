@@ -44,8 +44,12 @@ COPY docker/nginx.conf /etc/nginx/sites-available/default
 # Supervisor Configuration
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Copy entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/start-container
+RUN chmod +x /usr/local/bin/start-container
+
 # Expose port 80
 EXPOSE 80
 
-# Start Supervisor
-CMD ["/usr/bin/supervisord"]
+# Start Container
+ENTRYPOINT ["start-container"]
