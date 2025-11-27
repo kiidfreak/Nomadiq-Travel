@@ -1,6 +1,35 @@
 # Nomadiq Travel API Routes
 
-Base URL (Production): `https://nomadiq-travel-production.up.railway.app`
+**Backend (API)**: `https://nomadiq-travel-production.up.railway.app`  
+**Frontend**: `https://nomadiq-travel.vercel.app`
+
+## Admin Dashboard
+
+**✅ Laravel Filament Admin Panel is INSTALLED!**
+
+### Access URLs:
+- **Local (Herd)**: `http://nevcompany2.test/admin`
+- **Production (Railway)**: `https://nomadiq-travel-production.up.railway.app/admin`
+
+### Admin Features:
+The admin panel includes full management for:
+- 📦 **Packages** - Travel packages and itineraries
+- 📅 **Bookings** - Customer bookings and reservations
+- 💳 **Payments** - Payment tracking and M-Pesa integration
+- 👤 **Customers** - Customer database
+- ✍️ **Blog** - Blog posts and categories
+- ⭐ **Testimonials** - Customer reviews
+- 📍 **Destinations** - Travel destinations
+- 📸 **Floating Memories** - Photo gallery management
+- 🎯 **Micro Experiences** - Add-on experiences
+- 📨 **Inquiries & Proposals** - Customer requests
+- ⚙️ **Settings** - Site configuration
+- 👥 **Users** - Admin user management
+
+### Admin Credentials:
+Your admin user has been created. Use the credentials you set up to login.
+
+
 
 ## Health Check
 - `GET /up` - Health check endpoint (returns JSON with status)
