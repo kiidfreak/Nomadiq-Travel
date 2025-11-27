@@ -2,6 +2,28 @@
 
 echo "🚀 Starting Nomadiq Travel Backend..."
 
+# Auto-configure database for Railway if variables are missing
+if [ -z "$DB_HOST" ] && [ -n "$MYSQLHOST" ]; then
+    echo "🔄 Detected Railway MySQL variables, mapping to Laravel defaults..."
+    export DB_HOST="$MYSQLHOST"
+    export DB_PORT="$MYSQLPORT"
+    export DB_DATABASE="$MYSQLDATABASE"
+    export DB_USERNAME="$MYSQLUSER"
+    export DB_PASSWORD="$MYSQLPASSWORD"
+fi
+
+# Force MySQL connection if not set
+if [ -z "$DB_CONNECTION" ]; then
+    echo "⚠️  DB_CONNECTION not set, defaulting to 'mysql'..."
+    export DB_CONNECTION=mysql
+fi
+
+echo "Environment Check:"
+echo "DB_CONNECTION: $DB_CONNECTION"
+echo "DB_HOST: $DB_HOST"
+echo "DB_PORT: $DB_PORT"
+echo "DB_DATABASE: $DB_DATABASE"
+
 # Don't exit on error - we want to try to start the web server even if some steps fail
 set +e
 
