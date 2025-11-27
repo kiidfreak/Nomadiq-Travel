@@ -30,7 +30,7 @@ Ensure your latest changes are pushed to GitHub.
         - `DB_DATABASE`: (Get from MySQL service "Connect" tab -> `MYSQLDATABASE`)
         - `DB_USERNAME`: (Get from MySQL service "Connect" tab -> `MYSQLUSER`)
         - `DB_PASSWORD`: (Get from MySQL service "Connect" tab -> `MYSQLPASSWORD`)
-        - `APP_KEY`: (Generate one locally using `php artisan key:generate --show` and paste it here)
+        - `APP_KEY`: base64:2jaNeGGyNvxc9nhOnpQz1oMzZmzY1wn96ev7Bje0FQk= (Generate one locally using `php artisan key:generate --show` and paste it here)
     - Go to **Settings** -> **Networking**.
     - Click "Generate Domain". This will give you a URL like `web-production-xxxx.up.railway.app`.
     - Go back to **Variables** and update `APP_URL` with this domain (e.g., `https://web-production-xxxx.up.railway.app`).

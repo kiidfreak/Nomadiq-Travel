@@ -21,6 +21,8 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2);
             $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
             $table->text('special_requests')->nullable();
+            $table->json('selected_micro_experiences')->nullable();
+            $table->decimal('addons_total', 10, 2)->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
