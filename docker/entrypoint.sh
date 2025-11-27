@@ -10,9 +10,12 @@ if [ -z "$DB_HOST" ] && [ -n "$MYSQLHOST" ]; then
     export DB_DATABASE="$MYSQLDATABASE"
     export DB_USERNAME="$MYSQLUSER"
     export DB_PASSWORD="$MYSQLPASSWORD"
+    # FORCE mysql connection when Railway MySQL is detected
+    export DB_CONNECTION=mysql
+    echo "✅ Forced DB_CONNECTION to 'mysql'"
 fi
 
-# Force MySQL connection if not set
+# Force MySQL connection if not already set by Railway detection above
 if [ -z "$DB_CONNECTION" ]; then
     echo "⚠️  DB_CONNECTION not set, defaulting to 'mysql'..."
     export DB_CONNECTION=mysql
