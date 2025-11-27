@@ -16,6 +16,17 @@ Route::get('/up', function () {
     ]);
 });
 
+// Debug endpoint to check environment
+Route::get('/debug', function () {
+    return response()->json([
+        'app_env' => env('APP_ENV'),
+        'php_version' => PHP_VERSION,
+        'laravel_version' => app()->version(),
+        'db_connection' => config('database.default'),
+        'timestamp' => now()->toISOString()
+    ]);
+});
+
 // Serve storage files with CORS headers
 Route::get('/storage/{path}', function ($path) {
     $filePath = storage_path('app/public/' . $path);

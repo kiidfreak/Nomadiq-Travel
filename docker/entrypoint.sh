@@ -1,32 +1,51 @@
 #!/bin/sh
-set -e
 
-echo "Starting deployment process..."
+echo "🚀 Starting Nomadiq Travel Backend..."
 
-# Wait for database to be ready
-echo "Waiting for database connection..."
-until php artisan db:show 2>/dev/null; do
-    echo "Database not ready yet, waiting..."
+# Don't exit on error - we want to try to start the web server even if some steps fail
+set +e
+
+# Wait for database to be ready (with timeout)
+echo "⏳ Waiting for database connection..."
+COUNTER=0
+MAX_TRIES=30
+until php artisan db:show 2>/dev/null || [ $COUNTER -eq $MAX_TRIES ]; do
+    echo "Database not ready yet, attempt $((COUNTER+1))/$MAX_TRIES..."
+    COUNTER=$((COUNTER+1))
     sleep 2
 done
 
-echo "Database connection established!"
+if [ $COUNTER -eq $MAX_TRIES ]; then
+    echo "⚠️  Database connection timeout, continuing anyway..."
+else
+    echo "✅ Database connection established!"
+fi
 
-# Run migrations
-echo "Running migrations..."
-php artisan migrate --force || {
-    echo "Migration failed, but continuing..."
+# Run migrations (don't fail if migrations error)
+echo "🔄 Running database migrations..."
+php artisan migrate --force 2>&1 || {
+    echo "⚠️  Migration failed, but continuing to start the server..."
 }
 
-# Clear and cache configuration
-echo "Optimizing application..."
-php artisan config:clear
-php artisan config:cache
-php artisan route:clear
-php artisan route:cache
-php artisan view:clear
-php artisan view:cache
+# Clear and optimize (don't fail on errors)
+echo "⚡ Optimizing application..."
+php artisan config:clear 2>&1 || true
+php artisan route:clear 2>&1 || true
+php artisan view:clear 2>&1 || true
 
-# Start Supervisor
-echo "Starting web server..."
+php artisan config:cache 2>&1 || echo "⚠️  Config cache failed"
+php artisan route:cache 2>&1 || echo "⚠️  Route cache failed"
+php artisan view:cache 2>&1 || echo "⚠️  View cache failed"
+
+# Ensure storage directories exist and have correct permissions
+echo "📁 Setting up storage..."
+mkdir -p /var/www/storage/logs
+mkdir -p /var/www/storage/framework/cache
+mkdir -p /var/www/storage/framework/sessions
+mkdir -p /var/www/storage/framework/views
+chown -R www-data:www-data /var/www/storage
+chmod -R 775 /var/www/storage
+
+# Start Supervisor (this should NOT fail)
+echo "🌐 Starting web server..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
