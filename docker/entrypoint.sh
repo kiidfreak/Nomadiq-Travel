@@ -76,6 +76,10 @@ mkdir -p /var/www/storage/framework/views
 chown -R www-data:www-data /var/www/storage
 chmod -R 775 /var/www/storage
 
+# Create storage link
+echo "🔗 Creating storage link..."
+php artisan storage:link --force
+
 # Configure Nginx to use Railway's PORT if set, default to 80
 NGINX_PORT=${PORT:-80}
 echo "🌐 Configuring Nginx to listen on port: $NGINX_PORT"
