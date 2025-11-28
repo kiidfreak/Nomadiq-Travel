@@ -5,9 +5,85 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\MicroExperience;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MicroExperienceController extends Controller
 {
+    /**
+     * Transform micro experience image URL to full URL or fallback
+     */
+    private function transformImageUrl($experience)
+    {
+        // If already a full URL (Unsplash, etc.), return as is
+        if ($experience->image_url && filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
+            return $experience;
+        }
+
+        // If no image_url, set a fallback
+        if (empty($experience->image_url)) {
+            $experience->image_url = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
+            return $experience;
+        }
+
+        // Use APP_URL from environment (Railway sets this automatically)
+        $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
+        
+        // Handle both storage/micro-experiences/... and micro-experiences/... formats
+        $imagePath = $experience->image_url;
+        if (!str_starts_with($imagePath, 'storage/')) {
+            if (!str_starts_with($imagePath, 'micro-experiences/') && !str_starts_with($imagePath, '/micro-experiences/')) {
+                $imagePath = 'micro-experiences/' . ltrim($imagePath, '/');
+            }
+            $imagePath = 'storage/' . ltrim($imagePath, '/');
+        }
+
+        // Extract just the filename part for checking
+        $storageCheckPath = str_replace('storage/', '', $imagePath);
+        
+        // Check if file actually exists in storage
+        if (!Storage::disk('public')->exists($storageCheckPath)) {
+            // File doesn't exist, use Unsplash fallback based on experience ID
+            $fallbacks = [
+                'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800',
+                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+                'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
+                'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800',
+                'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=800',
+                'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800',
+            ];
+            $experience->image_url = $fallbacks[$experience->id % count($fallbacks)];
+        } else {
+            // File exists, use the full URL
+            $experience->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
+        }
+        
+        return $experience;
+    }
+
+    /**
+     * Fix price if it's incorrectly stored
+     */
+    private function fixPrice($experience)
+    {
+        // Ensure price_usd is a valid float and fix incorrectly stored prices
+        if ($experience->price_usd !== null && $experience->price_usd !== '') {
+            $price = (float) $experience->price_usd;
+            
+            // Fix prices that are clearly too high (likely stored with extra zeros)
+            if ($price > 1000 && $price % 100 === 0 && ($price / 100) < 1000) {
+                $price = $price / 100;
+            } elseif ($price > 1000 && $price % 10 === 0 && ($price / 10) < 1000) {
+                $price = $price / 10;
+            }
+            
+            $experience->price_usd = $price;
+        } else {
+            $experience->price_usd = null;
+        }
+        
+        return $experience;
+    }
+
     /**
      * Display a listing of micro experiences.
      * 
@@ -49,37 +125,8 @@ class MicroExperienceController extends Controller
         }
         
         $experiences = $experiences->map(function($experience) {
-                // Ensure price_usd is a valid float and fix incorrectly stored prices
-                if ($experience->price_usd !== null && $experience->price_usd !== '') {
-                    $price = (float) $experience->price_usd;
-                    
-                    // Fix prices that are clearly too high (likely stored with extra zeros)
-                    if ($price > 1000 && $price % 100 === 0 && ($price / 100) < 1000) {
-                        $price = $price / 100;
-                    } elseif ($price > 1000 && $price % 10 === 0 && ($price / 10) < 1000) {
-                        $price = $price / 10;
-                    }
-                    
-                    $experience->price_usd = $price;
-                } else {
-                    $experience->price_usd = null;
-                }
-                
-                // Ensure image_url is a full URL
-                if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
-                    // Use APP_URL from environment (Railway sets this automatically)
-                    $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
-                    
-                    // Handle both storage/micro-experiences/... and micro-experiences/... formats
-                    $imagePath = $experience->image_url;
-                    if (!str_starts_with($imagePath, 'storage/')) {
-                        if (!str_starts_with($imagePath, 'micro-experiences/') && !str_starts_with($imagePath, '/micro-experiences/')) {
-                            $imagePath = 'micro-experiences/' . ltrim($imagePath, '/');
-                        }
-                        $imagePath = 'storage/' . ltrim($imagePath, '/');
-                    }
-                    $experience->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
-                }
+                $experience = $this->fixPrice($experience);
+                $experience = $this->transformImageUrl($experience);
                 return $experience;
             });
         
@@ -100,37 +147,8 @@ class MicroExperienceController extends Controller
         $experience = MicroExperience::where('is_active', true)
             ->findOrFail($id);
         
-        // Ensure price_usd is a valid float and fix incorrectly stored prices
-        if ($experience->price_usd !== null && $experience->price_usd !== '') {
-            $price = (float) $experience->price_usd;
-            
-            // Fix prices that are clearly too high
-            if ($price > 1000 && $price % 100 === 0 && ($price / 100) < 1000) {
-                $price = $price / 100;
-            } elseif ($price > 1000 && $price % 10 === 0 && ($price / 10) < 1000) {
-                $price = $price / 10;
-            }
-            
-            $experience->price_usd = $price;
-        } else {
-            $experience->price_usd = null;
-        }
-        
-        // Ensure image_url is a full URL
-        if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
-            // Use APP_URL from environment (Railway sets this automatically)
-            $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
-            
-            // Handle both storage/micro-experiences/... and micro-experiences/... formats
-            $imagePath = $experience->image_url;
-            if (!str_starts_with($imagePath, 'storage/')) {
-                if (!str_starts_with($imagePath, 'micro-experiences/') && !str_starts_with($imagePath, '/micro-experiences/')) {
-                    $imagePath = 'micro-experiences/' . ltrim($imagePath, '/');
-                }
-                $imagePath = 'storage/' . ltrim($imagePath, '/');
-            }
-            $experience->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
-        }
+        $experience = $this->fixPrice($experience);
+        $experience = $this->transformImageUrl($experience);
         
         return response()->json([
             'success' => true,
@@ -157,37 +175,8 @@ class MicroExperienceController extends Controller
         
         $experiences = $query->get()
             ->map(function($experience) {
-                // Ensure price_usd is a valid float and fix incorrectly stored prices
-                if ($experience->price_usd !== null && $experience->price_usd !== '') {
-                    $price = (float) $experience->price_usd;
-                    
-                    // Fix prices that are clearly too high
-                    if ($price > 1000 && $price % 100 === 0 && ($price / 100) < 1000) {
-                        $price = $price / 100;
-                    } elseif ($price > 1000 && $price % 10 === 0 && ($price / 10) < 1000) {
-                        $price = $price / 10;
-                    }
-                    
-                    $experience->price_usd = $price;
-                } else {
-                    $experience->price_usd = null;
-                }
-                
-                // Ensure image_url is a full URL
-                if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
-                    // Use APP_URL from environment (Railway sets this automatically)
-                    $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
-                    
-                    // Handle both storage/micro-experiences/... and micro-experiences/... formats
-                    $imagePath = $experience->image_url;
-                    if (!str_starts_with($imagePath, 'storage/')) {
-                        if (!str_starts_with($imagePath, 'micro-experiences/') && !str_starts_with($imagePath, '/micro-experiences/')) {
-                            $imagePath = 'micro-experiences/' . ltrim($imagePath, '/');
-                        }
-                        $imagePath = 'storage/' . ltrim($imagePath, '/');
-                    }
-                    $experience->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
-                }
+                $experience = $this->fixPrice($experience);
+                $experience = $this->transformImageUrl($experience);
                 return $experience;
             });
         
@@ -197,4 +186,3 @@ class MicroExperienceController extends Controller
         ]);
     }
 }
-

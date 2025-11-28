@@ -5,9 +5,60 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Package;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PackageController extends Controller
 {
+    /**
+     * Transform package image URL to full URL or fallback
+     */
+    private function transformImageUrl($package)
+    {
+        // If already a full URL (Unsplash, etc.), return as is
+        if ($package->image_url && filter_var($package->image_url, FILTER_VALIDATE_URL)) {
+            return $package;
+        }
+
+        // If no image_url, set a fallback
+        if (empty($package->image_url)) {
+            $package->image_url = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800';
+            return $package;
+        }
+
+        // Use APP_URL from environment (Railway sets this automatically)
+        $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
+        
+        // Handle both storage/packages/... and packages/... formats
+        $imagePath = $package->image_url;
+        if (!str_starts_with($imagePath, 'storage/')) {
+            if (!str_starts_with($imagePath, 'packages/') && !str_starts_with($imagePath, '/packages/')) {
+                $imagePath = 'packages/' . ltrim($imagePath, '/');
+            }
+            $imagePath = 'storage/' . ltrim($imagePath, '/');
+        }
+
+        // Extract just the filename part for checking
+        $storageCheckPath = str_replace('storage/', '', $imagePath);
+        
+        // Check if file actually exists in storage
+        if (!Storage::disk('public')->exists($storageCheckPath)) {
+            // File doesn't exist, use Unsplash fallback based on package ID
+            $fallbacks = [
+                'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
+                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+                'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800',
+                'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800',
+                'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=800',
+            ];
+            $package->image_url = $fallbacks[$package->id % count($fallbacks)];
+        } else {
+            // File exists, use the full URL
+            $package->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
+        }
+        
+        return $package;
+    }
+
     /**
      * Display a listing of the packages.
      * 
@@ -22,22 +73,7 @@ class PackageController extends Controller
             ->where('is_active', true)
             ->get()
             ->map(function($package) {
-                // Ensure image_url is a full URL
-                if ($package->image_url && !filter_var($package->image_url, FILTER_VALIDATE_URL)) {
-                    // Use APP_URL from environment (Railway sets this automatically)
-                    $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
-                    
-                    // Handle both storage/packages/... and packages/... formats
-                    $imagePath = $package->image_url;
-                    if (!str_starts_with($imagePath, 'storage/')) {
-                        if (!str_starts_with($imagePath, 'packages/') && !str_starts_with($imagePath, '/packages/')) {
-                            $imagePath = 'packages/' . ltrim($imagePath, '/');
-                        }
-                        $imagePath = 'storage/' . ltrim($imagePath, '/');
-                    }
-                    $package->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
-                }
-                return $package;
+                return $this->transformImageUrl($package);
             });
         
         return response()->json([
@@ -64,21 +100,7 @@ class PackageController extends Controller
             ])
             ->findOrFail($id);
         
-        // Ensure image_url is a full URL
-        if ($package->image_url && !filter_var($package->image_url, FILTER_VALIDATE_URL)) {
-            // Use APP_URL from environment (Railway sets this automatically)
-            $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
-            
-            // Handle both storage/packages/... and packages/... formats
-            $imagePath = $package->image_url;
-            if (!str_starts_with($imagePath, 'storage/')) {
-                if (!str_starts_with($imagePath, 'packages/') && !str_starts_with($imagePath, '/packages/')) {
-                    $imagePath = 'packages/' . ltrim($imagePath, '/');
-                }
-                $imagePath = 'storage/' . ltrim($imagePath, '/');
-            }
-            $package->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
-        }
+        $package = $this->transformImageUrl($package);
         
         return response()->json([
             'success' => true,
@@ -100,22 +122,7 @@ class PackageController extends Controller
             ->take(3)
             ->get()
             ->map(function($package) {
-                // Ensure image_url is a full URL
-                if ($package->image_url && !filter_var($package->image_url, FILTER_VALIDATE_URL)) {
-                    // Use APP_URL from environment (Railway sets this automatically)
-                    $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
-                    
-                    // Handle both storage/packages/... and packages/... formats
-                    $imagePath = $package->image_url;
-                    if (!str_starts_with($imagePath, 'storage/')) {
-                        if (!str_starts_with($imagePath, 'packages/') && !str_starts_with($imagePath, '/packages/')) {
-                            $imagePath = 'packages/' . ltrim($imagePath, '/');
-                        }
-                        $imagePath = 'storage/' . ltrim($imagePath, '/');
-                    }
-                    $package->image_url = rtrim($appUrl, '/') . '/' . ltrim($imagePath, '/');
-                }
-                return $package;
+                return $this->transformImageUrl($package);
             });
         
         return response()->json([
@@ -158,8 +165,10 @@ class PackageController extends Controller
         // Only show active packages
         $query->where('is_active', true);
         
-        // Get results
-        $packages = $query->get();
+        // Get results and transform image URLs
+        $packages = $query->get()->map(function($package) {
+            return $this->transformImageUrl($package);
+        });
         
         return response()->json([
             'success' => true,
