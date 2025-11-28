@@ -79,6 +79,7 @@ chmod -R 775 /var/www/storage
 # Create storage link
 echo "🔗 Creating storage link..."
 php artisan storage:link --force
+chmod -R 755 /var/www/storage/app/public
 
 # Configure Nginx to use Railway's PORT if set, default to 80
 NGINX_PORT=${PORT:-80}
