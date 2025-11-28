@@ -48,7 +48,7 @@ const nextConfig = {
     unoptimized: process.env.NODE_ENV === 'development', // Enable optimization in production
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://nevcompany2.test/api',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://nomadiq-travel-production.up.railway.app/api',
   },
 }
 

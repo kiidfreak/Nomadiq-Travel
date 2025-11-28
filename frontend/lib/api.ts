@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 // Force the API URL to use the correct domain
-const apiUrl = typeof window !== 'undefined' 
-  ? (process.env.NEXT_PUBLIC_API_URL || 'https://nevcompany2.test/api')
-  : (process.env.NEXT_PUBLIC_API_URL || 'https://nevcompany2.test/api')
+const apiUrl = typeof window !== 'undefined'
+  ? (process.env.NEXT_PUBLIC_API_URL || 'https://nomadiq-travel-production.up.railway.app/api')
+  : (process.env.NEXT_PUBLIC_API_URL || 'https://nomadiq-travel-production.up.railway.app/api')
 
 // Debug: Log the API URL being used (only in development)
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
