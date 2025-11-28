@@ -67,10 +67,9 @@ class MicroExperienceController extends Controller
                 
                 // Ensure image_url is a full URL
                 if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
-                    $appUrl = config('app.url', 'https://nevcompany2.test');
-                    if (str_contains($appUrl, 'localhost')) {
-                        $appUrl = 'https://nevcompany2.test';
-                    }
+                    // Use APP_URL from environment (Railway sets this automatically)
+                    $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
+                    
                     // Handle both storage/micro-experiences/... and micro-experiences/... formats
                     $imagePath = $experience->image_url;
                     if (!str_starts_with($imagePath, 'storage/')) {
@@ -119,10 +118,9 @@ class MicroExperienceController extends Controller
         
         // Ensure image_url is a full URL
         if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
-            $appUrl = config('app.url', 'https://nevcompany2.test');
-            if (str_contains($appUrl, 'localhost')) {
-                $appUrl = 'https://nevcompany2.test';
-            }
+            // Use APP_URL from environment (Railway sets this automatically)
+            $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
+            
             // Handle both storage/micro-experiences/... and micro-experiences/... formats
             $imagePath = $experience->image_url;
             if (!str_starts_with($imagePath, 'storage/')) {
@@ -177,10 +175,9 @@ class MicroExperienceController extends Controller
                 
                 // Ensure image_url is a full URL
                 if ($experience->image_url && !filter_var($experience->image_url, FILTER_VALIDATE_URL)) {
-                    $appUrl = config('app.url', 'https://nevcompany2.test');
-                    if (str_contains($appUrl, 'localhost')) {
-                        $appUrl = 'https://nevcompany2.test';
-                    }
+                    // Use APP_URL from environment (Railway sets this automatically)
+                    $appUrl = env('APP_URL', config('app.url', 'https://nomadiq-travel-production.up.railway.app'));
+                    
                     // Handle both storage/micro-experiences/... and micro-experiences/... formats
                     $imagePath = $experience->image_url;
                     if (!str_starts_with($imagePath, 'storage/')) {

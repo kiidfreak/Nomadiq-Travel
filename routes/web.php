@@ -41,7 +41,21 @@ Route::get('/storage/{path}', function ($path) {
     return Response::make($file, 200, [
         'Content-Type' => $type,
         'Access-Control-Allow-Origin' => '*',
-        'Access-Control-Allow-Methods' => 'GET',
-        'Access-Control-Allow-Headers' => 'Content-Type',
+        'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+        'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+        'Access-Control-Expose-Headers' => 'Content-Length, Content-Range',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+        'Content-Length' => strlen($file),
     ]);
 })->where('path', '.*');
+
+// Handle CORS preflight requests for storage
+Route::options('/storage/{path}', function () {
+    return Response::make('', 204, [
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+        'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+        'Access-Control-Max-Age' => '1728000',
+    ]);
+})->where('path', '.*');
+
